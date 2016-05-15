@@ -34,9 +34,9 @@ body {
 }
 
 .content {
-  padding: 20px;
-  margin-left: -20px; /* negative indent the amount of the padding to maintain the grid system */
-  margin-right: -20px; /* negative indent the amount of the padding to maintain the grid system */
+  padding: 25px;
+  margin-left: -90px; /* negative indent the amount of the padding to maintain the grid system */
+  margin-right: -120px; /* negative indent the amount of the padding to maintain the grid system */
   -webkit-border-radius: 6px 6px 6px 6px;
   -moz-border-radius: 6px 6px 6px 6px;
   border-radius: 6px 6px 6px 6px;
