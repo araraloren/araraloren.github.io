@@ -1,0 +1,325 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>简单括号匹配 | Loren&#39;s Blog</title>
+  <meta name="author" content="araraloren">
+  
+  <meta name="description" content="大家好">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="简单括号匹配"/>
+  <meta property="og:site_name" content="Loren&#39;s Blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  
+  
+    <link href="/favicon.png" rel="icon">
+  
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/themes/journal.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/responsive.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/highlight.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <script src="/js/jquery-2.0.3.min.js"></script>
+
+  <!-- analytics -->
+  
+
+
+
+</head>
+
+ <body>  
+  <nav id="main-nav" class="navbar  navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <button type="button" class="navbar-header navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	<span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+       <a class="navbar-brand" href="/">Loren&#39;s Blog</a>
+      <div class="collapse navbar-collapse nav-menu">
+		<ul class="nav navbar-nav">
+		  
+		  <li>
+			<a href="/archives" title="All the articles.">
+			  <i class="fa fa-archive"></i>Archives
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/categories" title="All the categories.">
+			  <i class="fa fa-folder"></i>Categories
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/tags" title="All the tags.">
+			  <i class="fa fa-tags"></i>Tags
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/about" title="About me.">
+			  <i class="fa fa-user"></i>About
+			</a>
+		  </li>
+		  
+		</ul>
+      </div>
+    </div> <!-- container -->
+</nav>
+<div class="clearfix"></div>
+
+  <div class="container">
+  	<div class="content">
+    	 
+
+
+	
+		<div class="page-header ">		
+			<h1 class="title "> 简单括号匹配</h1>
+		</div>		
+	
+
+
+
+
+
+
+<div class="row post">
+	<!-- cols -->
+	
+	<div id="top_meta"></div>
+	<div class="col-md-9">
+	
+
+	<!-- content -->
+	<div class="mypage">		
+	  		
+
+	  <p>&#x8FD9;&#x662F;&#x4E00;&#x9053;&#x6765;&#x81EA;ACM&#x7684;&#x7B80;&#x5355;&#x7B97;&#x6CD5;&#x9898;&#x76EE;&#xFF0C;&#x9898;&#x76EE;&#x8981;&#x6C42;&#x68C0;&#x6D4B;<code>[]()</code>&#x4E24;&#x79CD;&#x62EC;&#x53F7;&#x7684;&#x5339;&#x914D;&#x60C5;&#x51B5;&#xFF0C;&#x9898;&#x76EE;&#x5927;&#x81F4;&#x662F;&#x8FD9;&#x6837;&#x7684;&#xFF08;&#x4ECE;&#x7F51;&#x4E0A;&#x627E;&#x7684;&#xFF09;&#xFF1A;</p>
+<a id="more"></a>
+<blockquote>
+<p>&#x8F93;&#x5165;<br>    &#x7B2C;&#x4E00;&#x884C;&#x8F93;&#x5165;&#x4E00;&#x4E2A;&#x6570;N&#xFF08;0&lt;N&lt;=100&#xFF09;,&#x8868;&#x793A;&#x6709;N&#x7EC4;&#x6D4B;&#x8BD5;&#x6570;&#x636E;&#x3002;&#x540E;&#x9762;&#x7684;N&#x884C;&#x8F93;&#x5165;&#x591A;&#x7EC4;&#x8F93;&#x5165;&#x6570;&#x636E;&#xFF0C;&#x6BCF;&#x7EC4;&#x8F93;&#x5165;&#x6570;&#x636E;&#x90FD;&#x662F;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;S(S&#x7684;&#x957F;&#x5EA6;&#x5C0F;&#x4E8E;10000&#xFF0C;&#x4E14;S&#x4E0D;&#x662F;&#x7A7A;&#x4E32;&#xFF09;&#xFF0C;&#x6D4B;&#x8BD5;&#x6570;&#x636E;&#x7EC4;&#x6570;&#x5C11;&#x4E8E;5&#x7EC4;&#x3002;&#x6570;&#x636E;&#x4FDD;&#x8BC1;S&#x4E2D;&#x53EA;&#x542B;&#x6709;&#x201D;[&#x201C;,&#x201D;]&#x201D;,&#x201D;(&#x201C;,&#x201D;)&#x201D;&#x56DB;&#x79CD;&#x5B57;&#x7B26;<br>&#x8F93;&#x51FA;<br>    &#x6BCF;&#x7EC4;&#x8F93;&#x5165;&#x6570;&#x636E;&#x7684;&#x8F93;&#x51FA;&#x5360;&#x4E00;&#x884C;&#xFF0C;&#x5982;&#x679C;&#x8BE5;&#x5B57;&#x7B26;&#x4E32;&#x4E2D;&#x6240;&#x542B;&#x7684;&#x62EC;&#x53F7;&#x662F;&#x914D;&#x5BF9;&#x7684;&#xFF0C;&#x5219;&#x8F93;&#x51FA;Yes,&#x5982;&#x679C;&#x4E0D;&#x914D;&#x5BF9;&#x5219;&#x8F93;&#x51FA;No<br>&#x6837;&#x4F8B;&#x8F93;&#x5165;<br>   3<br>    [(])<br>    (])<br>    ([<a href=""></a>])</p>
+<p>&#x6837;&#x4F8B;&#x8F93;&#x51FA;<br>   No<br>    No<br>    Yes</p>
+</blockquote>
+<!-- toc -->
+<ul>
+<li><a href="#c++">c++</a><ul>
+<li><a href="#stack">stack</a><ul>
+<li><a href="#compile">compile</a></li>
+<li><a href="#input &amp;&amp; output">input &amp;&amp; output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#Perl 6">Perl 6</a><ul>
+<li><a href="#stack">stack</a><ul>
+<li><a href="#input &amp;&amp; output">input &amp;&amp; output</a></li>
+</ul>
+</li>
+<li><a href="#use regex substitue match bracket">use regex substitue match bracket</a><ul>
+<li><a href="#input &amp;&amp; output">input &amp;&amp; output</a></li>
+</ul>
+</li>
+<li><a href="#grammar">grammar</a><ul>
+<li><a href="#output">output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- tocstop -->
+<h1 id="c++"><a href="#c" class="headerlink" title="c++"></a>c++</h1><p>&#x4F7F;&#x7528;c++&#xFF0C;&#x770B;&#x5230;&#x8FD9;&#x79CD;&#x6210;&#x5BF9;&#x7684;&#x5339;&#x914D;&#x62EC;&#x53F7;&#xFF0C;&#x9996;&#x5148;&#x60F3;&#x5230;&#x7684;&#x80AF;&#x5B9A;&#x662F;&#x6808;&#xFF0C;&#x4F7F;&#x7528;&#x6808;&#x53EF;&#x4EE5;&#x5728;<code>O(n)</code>&#x7684;&#x65F6;&#x95F4;&#x5185;&#x5339;&#x914D;&#x51FA;&#x7ED3;&#x679C;&#x3002;</p>
+<h2 id="stack"><a href="#stack" class="headerlink" title="stack"></a>stack</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span>	//for cin cout</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stack&gt;</span>	// for stack</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span>	// for string</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cin</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">cout</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="built_in">std</span>::<span class="built_in">stack</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">checkBracket</span><span class="params">(<span class="keyword">const</span> <span class="built_in">string</span>&amp; str)</span></span><br><span class="line"></span>{</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">     *  &apos;[&apos; -&gt; 91 &apos;]&apos; -&gt; 93</span><br><span class="line">     *  &apos;(&apos; -&gt; 40 &apos;)&apos; -&gt; 41</span><br><span class="line">    */</span></span><br><span class="line">    <span class="built_in">string</span>::const_iterator cit = str.begin();</span><br><span class="line">    <span class="built_in">string</span>::const_iterator end = str.end();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">stack</span>&lt;<span class="keyword">char</span>&gt; brackets;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// traverse user input string &#x904D;&#x5386;&#x7528;&#x6237;&#x8F93;&#x5165;&#x7684;&#x5B57;&#x7B26;&#x4E32;</span></span><br><span class="line">    <span class="keyword">for</span> (;cit != end;cit ++) {</span><br><span class="line">        <span class="comment">//if *cit is [ or ( &#x5982;&#x679C;&#x5B57;&#x7B26;&#x662F; [ &#x6216;&#x8005; ( &#x5373;&#x5165;&#x6808;</span></span><br><span class="line">        <span class="keyword">if</span> (brackets.empty() || *cit == <span class="number">91</span> || *cit == <span class="number">40</span>) {</span><br><span class="line">            brackets.push(*cit);</span><br><span class="line">        } <span class="keyword">else</span> { <span class="comment">// &#x5982;&#x679C;&#x662F;&#x5176;&#x5B83;&#x5B57;&#x7B26;&#xFF0C;&#x53D6;&#x51FA;&#x6808;&#x9876;&#x7684;&#x5B57;&#x7B26;&#x4E0E;&#x5F53;&#x524D;&#x5B57;&#x7B26;&#x6BD4;&#x8F83;</span></span><br><span class="line">            <span class="keyword">char</span> &amp; ch = brackets.top();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// match bracket &#x5339;&#x914D;&#x540E;&#x5219;&#x5C06;&#x6808;&#x9876;&#x7684;&#x5B57;&#x7B26;pop&#x6389;&#xFF0C;&#x5426;&#x5219;&#x5931;&#x8D25;</span></span><br><span class="line">            <span class="keyword">if</span> ((*cit == <span class="number">93</span> &amp;&amp; ch == <span class="number">91</span>) || (*cit == <span class="number">41</span> &amp;&amp; ch == <span class="number">40</span>)) {</span><br><span class="line">                brackets.pop();</span><br><span class="line">            } <span class="keyword">else</span> {</span><br><span class="line">                return <span class="literal">false</span>;</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line"> 	<span class="comment">//&#x6808;&#x4E3A;&#x7A7A;&#x7684;&#x65F6;&#x5019; &#x5339;&#x914D;&#x6210;&#x529F;</span></span><br><span class="line">    return brackets.empty();</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>{</span><br><span class="line"><span class="comment">/*</span><br><span class="line">	&#x7A0B;&#x5E8F;&#x9996;&#x5148;&#x63A5;&#x53D7;&#x4E00;&#x4E2A;&#x6574;&#x6570;n&#x7684;&#x8F93;&#x5165;</span><br><span class="line">    &#x7136;&#x540E;&#x8BFB;&#x53D6;n&#x4E2A;&#x5B57;&#x7B26;&#x4E32;&#x5E76;&#x8FD4;&#x56DE;&#x5339;&#x914D;&#x7ED3;&#x679C;</span><br><span class="line">*/</span></span><br><span class="line">    <span class="keyword">size_t</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> {</span><br><span class="line">        <span class="keyword">if</span> (!(cin &gt;&gt;count)) {</span><br><span class="line">            <span class="built_in">cin</span>.clear(), <span class="built_in">cin</span>.ignore();</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        }</span><br><span class="line">    } <span class="keyword">while</span> (<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">string</span> str;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>;i &lt; count;i ++) {</span><br><span class="line">        <span class="built_in">cin</span> &gt;&gt;str;</span><br><span class="line">        <span class="keyword">if</span> (checkBracket(str)) {</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;Yes\n&quot;</span>;</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;No\n&quot;</span>;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    return <span class="number">0</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="compile"><a href="#compile" class="headerlink" title="compile"></a>compile</h3><p>&#x7F16;&#x8BD1;&#x4F7F;&#x7528;&#x7684;&#x662F;gcc<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -Wall -Wextra -std=c++11 bracket-match.cpp</span><br></pre></td></tr></table></figure></p>
+<h3 id="input &amp;&amp; output"><a href="#input-amp-amp-output" class="headerlink" title="input &amp;&amp; output"></a>input &amp;&amp; output</h3><p>&#x4E0B;&#x9762;&#x662F;&#x6D4B;&#x8BD5;&#x4EE5;&#x53CA;&#x8F93;&#x51FA;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">5</span><br><span class="line">()()()[][][]</span><br><span class="line">Yes</span><br><span class="line">((()))[[[]]]</span><br><span class="line">Yes</span><br><span class="line">(([])[]((()))[[]])</span><br><span class="line">Yes</span><br><span class="line">((())))</span><br><span class="line">No</span><br><span class="line">((]]        </span><br><span class="line">No</span><br></pre></td></tr></table></figure></p>
+<h1 id="Perl 6"><a href="#Perl-6" class="headerlink" title="Perl 6"></a>Perl 6</h1><p>&#x4F7F;&#x7528; Perl 6&#x6765;&#x5B9E;&#x73B0;&#xFF0C;&#x9996;&#x5148;&#x7B2C;&#x4E00;&#x4E2A;&#x89E3;&#x6CD5;&#x8FD8;&#x662F;&#x4F7F;&#x7528;&#x6808;&#x5339;&#x914D;&#x7684;&#x3002;</p>
+<h2 id="stack"><a href="#stack-1" class="headerlink" title="stack"></a>stack</h2><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env perl6</span></span><br><span class="line"><span class="comment"># &#x4E0A;&#x9762;&#x662F; Perl 6&#x7684;shebang</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># $*IN&#x662F; Perl 6&#x7684;&#x6807;&#x51C6;&#x8F93;&#x5165;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x7528;&#x5B83;&#x83B7;&#x53D6;&#x7528;&#x6237;&#x7684;&#x8F93;&#x5165;</span></span><br><span class="line"><span class="keyword">my</span> \stdin = $*IN;</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x83B7;&#x53D6;&#x6837;&#x4F8B;&#x4E2A;&#x6570;</span></span><br><span class="line"><span class="keyword">my</span> $count = +stdin.get();</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x914D;&#x5BF9;&#x8868;</span></span><br><span class="line"><span class="keyword">my</span> %table = <span class="string">93 =&gt;</span> <span class="number">91</span>, <span class="string">41 =&gt;</span> <span class="number">40</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x5DE6;&#x62EC;&#x53F7;</span></span><br><span class="line"><span class="keyword">my</span> @list = (<span class="number">91</span>, <span class="number">40</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># for &#x5FAA;&#x73AF;&#x8FDB;&#x884C; $count &#x6B21;&#xFF0C;&#x5373;&#x4ECE; 0 ~ $count - 1</span></span><br><span class="line"><span class="keyword">for</span> ^$count {</span><br><span class="line">    <span class="comment"># &#x83B7;&#x53D6;&#x4E00;&#x884C;&#x8F93;&#x5165;</span></span><br><span class="line">    <span class="keyword">my</span> $str = ~stdin.get();</span><br><span class="line"></span><br><span class="line">	<span class="comment">## use ASCII encoding Str before match bracket</span></span><br><span class="line">    <span class="keyword">my</span> @chars = $str.encode(<span class="string">&apos;ASCII&apos;</span>)[<span class="number">0</span> .. * - <span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">my</span> @stack;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># str&#x53EA;&#x6709;&#x7F16;&#x7801;&#x4E4B;&#x540E;&#x624D;&#x53EF;&#x4EE5;&#x904D;&#x5386;&#xFF0C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;for&#x904D;&#x5386;&#x6574;&#x4E2A;str&#x7684;&#x5B57;&#x7B26;</span></span><br><span class="line">    <span class="keyword">for</span> @chars -&gt; $ch {</span><br><span class="line">        <span class="comment"># &#x6808;&#x4E3A;&#x7A7A;&#xFF0C;&#x5E76;&#x4E14;&#x5F53;&#x524D;&#x5B57;&#x7B26;&#x5728;@list&#x91CC;&#x9762;</span></span><br><span class="line">        <span class="comment"># (elem) &#x7528;&#x4E8E;&#x5224;&#x65AD;&#xFF0C;&#x662F;&#x4E00;&#x4E2A;&#x96C6;&#x5408;&#x8FD0;&#x7B97;&#xFF0C;&#x76F8;&#x5F53;&#x4E0E;&#x2208;&#xFF0C;&#x66F4;&#x591A;&#x4E1C;&#x897F;&#x53EF;&#x4EE5;&#x53C2;&#x89C1;&#x5B98;&#x65B9;&#x6587;&#x6863;&#xFF0C;&#x6216;&#x8005;</span></span><br><span class="line">        <span class="comment"># &#x6211;&#x7684;&#x7FFB;&#x8BD1;&#xFF08;&#x672A;&#x6765;&#x4F1A;&#x6709;&#xFF09;</span></span><br><span class="line">		<span class="keyword">if</span> @stack ~~ <span class="number">0</span> || ($ch (elem) @list) {</span><br><span class="line">			@stack.push: $ch;</span><br><span class="line">		} <span class="keyword">else</span> {</span><br><span class="line">            <span class="comment"># &#x5339;&#x914D;&#x5230;&#x6210;&#x5BF9;&#x62EC;&#x53F7;&#xFF0C;&#x6808;&#x9876;&#x51FA;&#x6808;</span></span><br><span class="line">			<span class="keyword">if</span> @stack[* - <span class="number">1</span>] == %table{$ch} {</span><br><span class="line">			    @stack.pop();</span><br><span class="line">			} <span class="keyword">else</span> {</span><br><span class="line">			    <span class="keyword">say</span> <span class="string">&quot;No&quot;</span>;</span><br><span class="line">			    <span class="keyword">exit</span>;</span><br><span class="line">			}</span><br><span class="line">		}</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment"># &#x5F53;&#x6808;&#x4E3A;&#x7A7A;&#x662F;&#x8BF4;&#x660E;&#x5339;&#x914D;&#x6210;&#x529F;</span></span><br><span class="line">    <span class="keyword">say</span> @stack ~~ <span class="number">0</span> ?? <span class="string">&quot;Yes&quot;</span> !! <span class="string">&quot;No&quot;</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="input &amp;&amp; output"><a href="#input-amp-amp-output-1" class="headerlink" title="input &amp;&amp; output"></a>input &amp;&amp; output</h3><p>&#x4E0B;&#x9762;&#x662F;&#x6D4B;&#x8BD5;&#x8F93;&#x5165;&#x4EE5;&#x53CA;&#x8F93;&#x51FA;&#x3002;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">5</span><br><span class="line">()()()[][][]</span><br><span class="line">Yes</span><br><span class="line">((()))[[[]]]</span><br><span class="line">Yes</span><br><span class="line">(([])[]((()))[[]])</span><br><span class="line">Yes</span><br><span class="line">((())))</span><br><span class="line">No</span><br><span class="line">((]]</span><br><span class="line">No</span><br></pre></td></tr></table></figure></p>
+<h2 id="use regex substitue match bracket"><a href="#use-regex-substitue-match-bracket" class="headerlink" title="use regex substitue match bracket"></a>use regex substitue match bracket</h2><p>Perl 5&#x7684;&#x6B63;&#x5219;&#x662F;&#x51FA;&#x4E86;&#x540D;&#x7684;&#x5F3A;&#x5927;&#xFF0C;Perl 6&#x4E5F;&#x4E0D;&#x4F8B;&#x5916;&#xFF0C;&#x4E0B;&#x9762;&#x4F7F;&#x7528;&#x666E;&#x901A;&#x7684;&#x6B63;&#x5219;&#x53BB;&#x6389;&#x6210;&#x5BF9;&#x7684;&#x62EC;&#x53F7;&#xFF0C;&#x5982;&#x679C;&#x6700;&#x540E;&#x5B57;&#x7B26;&#x4E32;&#x4E3A;&#x7A7A;&#xFF0C;&#x90A3;&#x4E48;&#x5B57;&#x7B26;&#x4E32;&#x4FBF;&#x662F;&#x7B26;&#x5408;&#x8981;&#x6C42;&#x7684;&#x3002;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env perl6</span><br><span class="line"></span><br><span class="line">use v6;</span><br><span class="line"></span><br><span class="line">my \stdin = $*IN;</span><br><span class="line"></span><br><span class="line">my Int $count = +stdin.get();</span><br><span class="line"></span><br><span class="line">for ^$count {</span><br><span class="line">    my Str $str = stdin.get();</span><br><span class="line"></span><br><span class="line"> 	## &#x5229;&#x7528;&#x6B63;&#x5219;&#x66FF;&#x6362;&#x6389; [] ()</span><br><span class="line">    # s/// &#x5373; Perl 6&#x91CC;&#x9762;&#x7684;&#x6B63;&#x5219;&#x66FF;&#x6362;&#xFF0C;</span><br><span class="line">    # || &#x662F; Perl 6&#x4E2D;&#x7684; &#x6298;&#x4E00; &#x8FD0;&#x7B97;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x8981;&#x5339;&#x914D;&#x5230; [] &#x6216;&#x8005; () &#x4E2D;&#x7684;&#x4E00;&#x79CD;</span><br><span class="line">    # + &#x5373;&#x662F;&#x5339;&#x914D;&#x4E00;&#x4E2A;&#x6216;&#x8005;&#x4EE5;&#x4E0A;&#xFF0C;&#x7136;&#x540E;&#x5168;&#x90E8;&#x66FF;&#x6362;&#x4E3A;&#x7A7A;</span><br><span class="line">    last unless $str ~~ s:g/[ \[ \] || \( \) ]+//;</span><br><span class="line"></span><br><span class="line">    say $str.chars ?? &quot;No&quot; !! &quot;Yes&quot;;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h3 id="input &amp;&amp; output"><a href="#input-amp-amp-output-2" class="headerlink" title="input &amp;&amp; output"></a>input &amp;&amp; output</h3><p>&#x4E0B;&#x9762;&#x662F;&#x6D4B;&#x8BD5;&#x4EE5;&#x53CA;&#x8F93;&#x51FA;&#x3002;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">5</span><br><span class="line">()()()[][][]</span><br><span class="line">Yes</span><br><span class="line">((()))[[[]]]</span><br><span class="line">Yes</span><br><span class="line">(([])[]((()))[[]])</span><br><span class="line">Yes</span><br><span class="line">((())))</span><br><span class="line">No</span><br><span class="line">((]]</span><br><span class="line">No</span><br></pre></td></tr></table></figure></p>
+<h2 id="grammar"><a href="#grammar" class="headerlink" title="grammar"></a>grammar</h2><p>Perl 6&#x9664;&#x4E86;&#x63D0;&#x4F9B;&#x4E86;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x65F6;&#xFF0C;&#x8FD8;&#x63D0;&#x4F9B;&#x4E86;&#x66F4;&#x5F3A;&#x5927;&#x7684;&#x6B63;&#x5219;&#x7ED3;&#x6784; grammar&#xFF0C;&#x5B83;&#x9002;&#x5408;&#x7528;&#x6765;&#x5339;&#x914D;&#x90A3;&#x79CD;&#x56FA;&#x5B9A;&#x7684;&#x683C;&#x5F0F;&#xFF0C;&#x6BD4;&#x5982;json&#x3001;ini&#x7B49;&#x5177;&#x6709;&#x4E00;&#x5B9A;&#x683C;&#x5F0F;&#x7684;&#x6587;&#x4EF6;&#x5185;&#x5BB9;&#x3002;<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env perl6</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Perl 6&#x4E2D;&#x7684;&#x5F02;&#x5E38;&#xFF0C;&#x8DDF;&#x5176;&#x4ED6;&#x8BED;&#x8A00;&#x5DEE;&#x4E0D;&#x591A;</span></span><br><span class="line">class X::BrakcetNotMatch is Exception { }</span><br><span class="line"></span><br><span class="line"><span class="comment"># grammar &#x7684;&#x58F0;&#x660E;&#xFF0C;&#x548C;class&#x7684;&#x58F0;&#x660E;&#x683C;&#x5F0F;&#x5F88;&#x50CF;</span></span><br><span class="line">grammar Bracket {</span><br><span class="line">    rule TOP { <span class="comment"># &#x4E00;&#x4E2A; grammar &#x4E00;&#x5B9A;&#x8981;&#x6709;&#x4E00;&#x4E2A; TOP rule</span></span><br><span class="line">        &lt;pair&gt;*</span><br><span class="line">    }</span><br><span class="line">    token pair { <span class="comment"># pair&#x7684;&#x5B9A;&#x4E49;&#x662F;&#x9012;&#x5F52;&#x5F0F;&#x7684;</span></span><br><span class="line">        &lt;bl&gt;&lt;br&gt; |</span><br><span class="line">        &lt;bl&gt;&lt;pair&gt;+&lt;br&gt;</span><br><span class="line">        &lt;?{</span><br><span class="line">            <span class="comment"># token &#x53EF;&#x4EE5;&#x9644;&#x5E26;&#x8BED;&#x53E5;&#xFF0C;&#x8FDB;&#x884C;&#x4E00;&#x4E9B;&#x5FC5;&#x8981;&#x7684;&#x5904;&#x7406;</span></span><br><span class="line">            <span class="keyword">state</span> %table = <span class="string">&apos;(&apos;</span> =&gt; <span class="string">&apos;)&apos;</span>, <span class="string">&apos;[&apos;</span> =&gt; <span class="string">&apos;]&apos;</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment"># &#x8FD9;&#x91CC;&#x7528;&#x6765;&#x68C0;&#x6D4B;&#x5339;&#x914D;&#x5230;&#x5B57;&#x7B26;&#x4EE5;&#x53CA;&#x62EC;&#x53F7;&#x7684;&#x5339;&#x914D;&#x7ED3;&#x679C;</span></span><br><span class="line">            X::BrakcetNotMatch.new().throw <span class="keyword">unless</span> %table{$&lt;bl&gt;}:<span class="keyword">exists</span>;</span><br><span class="line">            X::BrakcetNotMatch.new().throw <span class="keyword">unless</span> %table{$&lt;bl&gt;} eq $&lt;br&gt;;</span><br><span class="line">        }&gt;</span><br><span class="line">    }</span><br><span class="line">    token bl { <span class="comment"># &#x7528;&#x6765;&#x5339;&#x914D;&#x5DE6;&#x62EC;&#x53F7;&#x4E2D;&#x7684;&#x4E00;&#x4E2A;</span></span><br><span class="line">        &lt;[ \( \[ ]&gt;</span><br><span class="line">    }</span><br><span class="line">    token br { <span class="comment"># &#x7528;&#x6765;&#x5339;&#x914D;&#x53F3;&#x62EC;&#x53F7;&#x4E2D;&#x7684;&#x4E00;&#x4E2A;</span></span><br><span class="line">        &lt;[ \) \] ]&gt;</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment"># &#x8FD9;&#x91CC;&#x76F4;&#x63A5;&#x7528; &#x4F8B;&#x5B50;&#x6765;&#x6D4B;&#x8BD5;&#xFF0C;&#x6CA1;&#x6709;&#x8F93;&#x5165;&#x8F93;&#x51FA;</span></span><br><span class="line"><span class="keyword">my</span> @sample = [</span><br><span class="line">    <span class="string">&quot;()[]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;(())[[]]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;([][()])&quot;</span>,</span><br><span class="line">    <span class="string">&quot;((())&quot;</span>,</span><br><span class="line">    <span class="string">&quot;((]]&quot;</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> @sample -&gt; $sample {</span><br><span class="line">    try {</span><br><span class="line">        <span class="comment"># &#x5339;&#x914D;&#x6210;&#x529F;&#xFF0C;&#x8BED;&#x53E5;&#x4F1A;&#x6267;&#x884C;&#x5230;&quot;Yes&quot;&#xFF0C;&#x5426;&#x5219;&#x629B;&#x51FA;&#x5F02;&#x5E38;</span></span><br><span class="line">        Bracket.parse($sample);</span><br><span class="line">        <span class="keyword">say</span> <span class="string">&quot;Yes&quot;</span>;</span><br><span class="line">        CATCH { <span class="comment"># CATCH &#x662F; Perl 6&#x4E2D;&#x7684;&#x5F02;&#x5E38;&#x5904;&#x7406;&#x8BED;&#x53E5;&#x5757;</span></span><br><span class="line">            <span class="keyword">when</span> X::BrakcetNotMatch {</span><br><span class="line">                <span class="keyword">say</span> <span class="string">&quot;No&quot;</span>;</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h3 id="output"><a href="#output" class="headerlink" title="output"></a>output</h3><p>&#x4E0A;&#x9762;&#x811A;&#x672C;&#x7684;&#x8F93;&#x51FA;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Yes</span><br><span class="line">Yes</span><br><span class="line">Yes</span><br><span class="line">Yes</span><br><span class="line">No</span><br></pre></td></tr></table></figure></p>
+	  
+	</div>
+
+	<div>
+  	<center>
+	<div class="pagination">
+<ul class="pagination">
+	 
+		
+          <li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>
+        
+
+        <li><a href="/archives"><i class="fa fa-archive"></i>Archive</a></li>
+
+		
+		   <li class="next"><a href="/05-15-2016/IA-32算术移位与逻辑移位/" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>         
+        
+	
+</ul>
+</div>
+
+    </center>
+	</div>
+
+    <!-- share -->
+    
+        
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_more" data-cmd="more"></a>
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+        <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+        <a href="#" class="bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+        <a href="#" class="bds_evernotecn" data-cmd="evernotecn" title="分享到印象笔记"></a>
+        <a href="#" class="bds_youdao" data-cmd="youdao" title="分享到有道云笔记"></a>
+        <a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+    </div>
+    <script>
+        window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{}};
+        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+
+
+        
+
+    
+	
+	<!-- comment -->
+	
+<section id="comment">
+  <h2 class="title">留言</h2>
+
+  
+  	 <div class="ds-thread" data-thread-key="05-17-2016/简单括号匹配/" data-title="简单括号匹配" data-url="http://araraloren.com/05-17-2016/简单括号匹配/"></div>  
+  
+</section>
+
+	</div> <!-- col-md-9/col-md-12 -->
+		
+	
+	<div id="side_meta">
+		<div class="col-md-3" id="post_meta"> 
+
+	<!-- date -->
+	
+	<div class="meta-widget">
+	<i class="fa fa-clock-o"></i>
+	05-17-2016 
+	</div>
+	
+
+	<!-- categories -->
+    
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#categorys"><i class="fa fa-folder"></i></a>	
+    <ul id="categorys" class="tag_box list-unstyled collapse in">
+          
+  <li>
+    <li><a href="/categories/c-Perl6/">c++,Perl6<span>1</span></a></li>
+  </li>
+
+    </ul>
+	</div>
+	
+
+	<!-- tags -->
+	
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#tags"><i class="fa fa-tags"></i></a>		  
+    <ul id="tags" class="tag_box list-unstyled collapse in">	  
+	    
+  <li><a href="/tags/c-Perl6-stack-regex-grammar/">c++,Perl6,stack,regex,grammar<span>1</span></a></li>
+    </ul>
+	</div>
+		
+
+	<!-- toc -->
+	<div class="meta-widget">
+	
+	</div>
+	
+    <hr>
+	
+</div><!-- col-md-3 -->
+
+	</div>
+		
+
+</div><!-- row -->
+
+<script type="text/javascript">
+  var duoshuoQuery = { short_name: 'araraloren' };
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';
+    ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+
+	</div>
+  </div>
+  <div class="container-narrow">
+  <footer> <p>
+Copyright &copy 2016 araraloren 保留所有权利
+</p>
+</br>
+<p>
+  &copy; 2016 araraloren
+  
+      with help from <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-freemind/">Freemind</a>.    
+</p>
+
+
+ </footer>
+</div> <!-- container-narrow -->
+  
+
+
+  
+<a id="gotop" href="#">   
+  <span>▲</span> 
+</a>
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/search.js"></script> 
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+
+</body>
+   </html>
