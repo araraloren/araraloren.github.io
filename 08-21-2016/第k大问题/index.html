@@ -1,0 +1,289 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第k大问题 | Loren&#39;s Blog</title>
+  <meta name="author" content="araraloren">
+  
+  <meta name="description" content="大家好">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="第k大问题"/>
+  <meta property="og:site_name" content="Loren&#39;s Blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  
+  
+    <link href="/favicon.png" rel="icon">
+  
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/themes/journal.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/responsive.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/highlight.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <script src="/js/jquery-2.0.3.min.js"></script>
+
+  <!-- analytics -->
+  
+
+
+
+</head>
+
+ <body>  
+  <nav id="main-nav" class="navbar  navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <button type="button" class="navbar-header navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	<span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+       <a class="navbar-brand" href="/">Loren&#39;s Blog</a>
+      <div class="collapse navbar-collapse nav-menu">
+		<ul class="nav navbar-nav">
+		  
+		  <li>
+			<a href="/archives" title="All the articles.">
+			  <i class="fa fa-archive"></i>Archives
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/categories" title="All the categories.">
+			  <i class="fa fa-folder"></i>Categories
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/tags" title="All the tags.">
+			  <i class="fa fa-tags"></i>Tags
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/about" title="About me.">
+			  <i class="fa fa-user"></i>About
+			</a>
+		  </li>
+		  
+		</ul>
+      </div>
+    </div> <!-- container -->
+</nav>
+<div class="clearfix"></div>
+
+  <div class="container">
+  	<div class="content">
+    	 
+
+
+	
+		<div class="page-header ">		
+			<h1 class="title "> 第k大问题</h1>
+		</div>		
+	
+
+
+
+
+
+
+<div class="row post">
+	<!-- cols -->
+	
+	<div id="top_meta"></div>
+	<div class="col-md-9">
+	
+
+	<!-- content -->
+	<div class="mypage">		
+	  		
+
+	  <p>&#x4ECE;&#x7ED9;&#x5B9A;&#x7684;&#x6570;&#x636E;&#x4E2D;&#x5BFB;&#x627E;&#x7B2C;k&#x5927;&#x7684;&#x5143;&#x7D20;&#xFF0C;&#x4E09;&#x79CD;&#x89E3;&#x6CD5;&#x3002;</p>
+<a id="more"></a>
+<h2 id="common code"><a href="#common-code" class="headerlink" title="common code"></a>common code</h2><p>&#x7528;&#x6765;&#x5E2E;&#x52A9;&#x8F93;&#x5165;&#x6307;&#x5B9A;&#x7C7B;&#x578B;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x6BD4;&#x5982;<code>int number = get&lt;int&gt;();</code>&#x3002;<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">T <span class="title">get</span><span class="params">()</span></span><br><span class="line"></span>{</span><br><span class="line">    T in;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> {</span><br><span class="line">        <span class="keyword">if</span> (!(std::cin &gt;&gt;in)) {</span><br><span class="line">            <span class="built_in">std</span>::<span class="built_in">cin</span>.clear(), <span class="built_in">std</span>::<span class="built_in">cin</span>.ignore();</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        }</span><br><span class="line">    }<span class="keyword">while</span>(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">    return in;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h2 id="Normal"><a href="#Normal" class="headerlink" title="Normal"></a>Normal</h2><p>&#x666E;&#x901A;&#x7684;&#x89E3;&#x6CD5;&#xFF0C;&#x5148;&#x8FDB;&#x884C;&#x6392;&#x5E8F;&#xFF0C;&#x7136;&#x800C;&#x76F4;&#x63A5;&#x9009;&#x53D6;&#x7B2C;k&#x5927;&#x3002;<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>{</span><br><span class="line">    <span class="keyword">size_t</span> count = <span class="number">0</span>, k = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;Input count:&quot;</span>;</span><br><span class="line"></span><br><span class="line">    count = get&lt;<span class="keyword">size_t</span>&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;Input k:&quot;</span>;</span><br><span class="line"></span><br><span class="line">    k = get&lt;<span class="keyword">size_t</span>&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="built_in">array</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// &#x7528;&#x6237;&#x8F93;&#x5165;</span></span><br><span class="line">    <span class="built_in">array</span>.reserve(count);   </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>;i &lt; count; ++ i) {</span><br><span class="line">        <span class="built_in">array</span>.push_back(get&lt;<span class="keyword">int</span>&gt;());</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// &#x6392;&#x5E8F;</span></span><br><span class="line">    <span class="built_in">std</span>::sort(<span class="built_in">array</span>.begin(), <span class="built_in">array</span>.end(), <span class="built_in">std</span>::less&lt;<span class="keyword">int</span>&gt;());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// &#x76F4;&#x63A5;&#x9009;&#x53D6;&#x7B2C;k&#x5927;&#x5373;&#x53EF;</span></span><br><span class="line">    <span class="keyword">if</span> (k &lt;= <span class="built_in">array</span>.size() &amp;&amp; k &gt; <span class="number">0</span>) {</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;The &quot;</span>&lt;&lt;k&lt;&lt;<span class="string">&quot; of the array is &quot;</span>&lt;&lt;<span class="built_in">array</span>[k - <span class="number">1</span>]&lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;K is two larger.\n&quot;</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    return EXIT_SUCCESS;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h2 id="better"><a href="#better" class="headerlink" title="better"></a>better</h2><p>&#x7A0D;&#x5FAE;&#x597D;&#x4E00;&#x70B9;&#x7684;&#x7248;&#x672C;&#xFF0C;&#x6392;&#x5E8F;&#x7684;&#x65F6;&#x5019;&#x4E0D;&#x53EA;&#x5BF9;&#x9700;&#x8981;&#x7684;k&#x5927;&#x6570;&#x636E;&#x6392;&#x5E8F;&#x3002;<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>{</span><br><span class="line">    <span class="keyword">size_t</span> count = <span class="number">0</span>, k = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;Input count:&quot;</span>;</span><br><span class="line"></span><br><span class="line">    count = get&lt;<span class="keyword">size_t</span>&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;Input k:&quot;</span>;</span><br><span class="line"></span><br><span class="line">    k = get&lt;<span class="keyword">size_t</span>&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="built_in">array</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">array</span>.reserve(count);   </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>;i &lt; k; ++ i) {</span><br><span class="line">        <span class="built_in">array</span>.push_back(get&lt;<span class="keyword">int</span>&gt;());</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = k;i &lt; count;++ i) {</span><br><span class="line">        <span class="keyword">int</span> num = get&lt;<span class="keyword">int</span>&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// &#x5982;&#x679C;&#x5DF2;&#x7ECF;&#x627E;&#x5230;&#x7B2C;k&#x5927;&#xFF0C;&#x5219;&#x9000;&#x51FA;&#x5FAA;&#x73AF;</span></span><br><span class="line">        <span class="keyword">if</span> (num &lt; <span class="built_in">array</span>.front()) {</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">size_t</span> j = <span class="number">1</span>;j &lt; k; ++ j) {</span><br><span class="line">                <span class="keyword">if</span> (num &lt;= array[j]) {</span><br><span class="line">                    <span class="built_in">array</span>[j - <span class="number">1</span>] = num;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                } <span class="keyword">else</span> {</span><br><span class="line">                    <span class="built_in">array</span>[j - <span class="number">1</span>] = <span class="built_in">array</span>[j];</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (k &lt;= <span class="built_in">array</span>.size() &amp;&amp; k &gt; <span class="number">0</span>) {</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;The &quot;</span>&lt;&lt;k&lt;&lt;<span class="string">&quot; of the array is &quot;</span>&lt;&lt;<span class="built_in">array</span>[k - <span class="number">1</span>]&lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">&quot;K is two larger.\n&quot;</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    return EXIT_SUCCESS;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<h2 id="quick select"><a href="#quick-select" class="headerlink" title="quick select"></a>quick select</h2><p>&#x4F7F;&#x7528;&#x5FEB;&#x901F;&#x9009;&#x62E9;&#x7B97;&#x6CD5;&#x3002;</p>
+<h3 id="QuickSelect"><a href="#QuickSelect" class="headerlink" title="QuickSelect"></a>QuickSelect</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdexcept&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> QuickSelect</span><br><span class="line">{</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">typedef</span> <span class="keyword">typename</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt;::size_type size_type;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * &#x6784;&#x9020;&#x51FD;&#x6570;</span><br><span class="line">     * @brief QuickSelect</span><br><span class="line">     * @param array - vector&#x7C7B;&#x578B;&#x7684;&#x6570;&#x7EC4;</span><br><span class="line">     */</span></span><br><span class="line">    QuickSelect(<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt;&amp; <span class="built_in">array</span>)</span><br><span class="line">        :m_array(<span class="built_in">array</span>)</span><br><span class="line">    {}</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * &#x9009;&#x62E9;&#x7B2C;nth&#x5927;&#x7684;&#x5143;&#x7D20;&#xFF0C;</span><br><span class="line">     * &#x5931;&#x8D25;&#x629B;&#x51FA;std::out_of_range&#x5F02;&#x5E38;,</span><br><span class="line">     * &#x6210;&#x529F;&#x8FD4;&#x56DE;&#x5F97;&#x5230;&#x7684;&#x5143;&#x7D20;</span><br><span class="line">     * @brief select</span><br><span class="line">     * @param nth</span><br><span class="line">     * @return</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">const</span> T&amp;</span><br><span class="line">    <span class="title">select</span><span class="params">(size_type nth)</span> <span class="title">throw</span><span class="params">(<span class="built_in">std</span>::out_of_range)</span></span><br><span class="line">    </span>{</span><br><span class="line">        <span class="comment">//s_pos&#x5373;&#x7B2C;n&#x5927;&#x5728;&#x6392;&#x5E8F;&#x4E4B;&#x540E;&#x6570;&#x7EC4;&#x4E2D;&#x7684;&#x4E0B;&#x6807;</span></span><br><span class="line">        size_type s_pos = m_array.size() - nth;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(s_pos &gt; m_array.size()){</span><br><span class="line">            throw <span class="built_in">std</span>::out_of_range(<span class="string">&quot;index out of range&quot;</span>);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        return <span class="keyword">this</span>-&gt;select_pos(s_pos, <span class="number">0</span>, m_array.size());</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * @brief select</span><br><span class="line">     * @param nth</span><br><span class="line">     * @param begin</span><br><span class="line">     * @param end</span><br><span class="line">     * @return</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">const</span> T&amp;</span><br><span class="line">    <span class="title">select</span><span class="params">(size_type nth, size_type begin, size_type end)</span> <span class="title">throw</span><span class="params">(<span class="built_in">std</span>::out_of_range)</span></span><br><span class="line">    </span>{</span><br><span class="line">        size_type array_size = m_array.size();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(begin &gt; array_size || end &gt; array_size || end &lt; begin){</span><br><span class="line">            throw <span class="built_in">std</span>::out_of_range(<span class="string">&quot;index out of range&quot;</span>);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="comment">//&#x8981;&#x67E5;&#x627E;&#x8303;&#x56F4;&#x7684;&#x957F;&#x5EA6;</span></span><br><span class="line">        size_type range_length = end - begin + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//&#x8981;&#x67E5;&#x627E;&#x7684;&#x7B2C;n&#x5927;&#x7684;&#x5143;&#x7D20;&#x5728;&#x5F53;&#x524D;&#x8303;&#x56F4;&#x5185;&#x7684;&#x4F4D;&#x7F6E;</span></span><br><span class="line">        size_type s_pos = range_length - nth;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(s_pos &gt; range_length){</span><br><span class="line">            throw <span class="built_in">std</span>::out_of_range(<span class="string">&quot;index out of range&quot;</span>);</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line"></span><br><span class="line">        return <span class="keyword">this</span>-&gt;select_pos(s_pos, begin, end);</span><br><span class="line">    }</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * pos&#x8868;&#x793A;&#x7684;&#x662F;&#x5143;&#x7D20;&#x4ECE;begin&#x5F00;&#x59CB;&#x7684;&#x4F4D;&#x7F6E;</span><br><span class="line">     * @brief select_pos</span><br><span class="line">     * @param pos</span><br><span class="line">     * @param begin</span><br><span class="line">     * @param end</span><br><span class="line">     * @return</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">const</span> T&amp; <span class="title">select_pos</span><span class="params">(size_type pos, size_type begin, size_type end)</span></span><br><span class="line">    </span>{</span><br><span class="line">        T&amp; pivot = m_array[begin];</span><br><span class="line">        size_type swap_pos = begin;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(begin == end){</span><br><span class="line">            return m_array[pos];</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="comment">//&#x8FDB;&#x884C;&#x4E00;&#x6B21;&#x5FEB;&#x901F;&#x6392;&#x5E8F;</span></span><br><span class="line">        <span class="keyword">for</span>(size_type i = begin + <span class="number">1</span>;i &lt; end;i ++){</span><br><span class="line">            <span class="keyword">if</span>(m_array[i] &lt; pivot){</span><br><span class="line">                <span class="built_in">std</span>::swap(m_array[i], m_array[swap_pos ++]);</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="comment">//&#x6570;&#x7EC4;&#x5143;&#x7D20;&#x4E2A;&#x6570;&#x4E3A;&#x5947;&#x6570;&#x65F6;&#x591A;&#x4EA4;&#x6362;&#x4E00;&#x6B21;</span></span><br><span class="line">        <span class="keyword">if</span>(m_array.size() % <span class="number">2</span> != <span class="number">0</span>){</span><br><span class="line">            <span class="keyword">if</span>(m_array[end - <span class="number">1</span>] &lt; pivot){</span><br><span class="line">                <span class="built_in">std</span>::swap(m_array[end - <span class="number">1</span>], m_array[swap_pos ++]);</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(swap_pos - begin == pos){</span><br><span class="line">            return m_array[swap_pos];</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(swap_pos - begin &lt; pos){</span><br><span class="line">            return <span class="keyword">this</span>-&gt;select_pos(pos, swap_pos + <span class="number">1</span>, end);</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">else</span>{</span><br><span class="line">            return <span class="keyword">this</span>-&gt;select_pos(pos, begin, swap_pos);</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * @brief m_array</span><br><span class="line">     */</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt;&amp; m_array;</span><br><span class="line">};</span><br></pre></td></tr></table></figure>
+<h3 id="main"><a href="#main" class="headerlink" title="main"></a>main</h3><p>&#x4F7F;&#x7528;&#x4E0A;&#x9762;&#x7684;&#x5FEB;&#x901F;&#x9009;&#x62E9;&#x7B97;&#x6CD5;&#x7684;&#x4F8B;&#x5B50;&#x3002;<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="built_in">std</span>{</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="built_in">std</span>::ostream&amp; <span class="keyword">operator</span> &lt;&lt;(<span class="built_in">std</span>::ostream&amp; out, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt;&amp; <span class="built_in">array</span>)</span><br><span class="line">{</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> e:<span class="built_in">array</span>){</span><br><span class="line">        out &lt;&lt; e &lt;&lt;<span class="string">&quot; &quot;</span>;</span><br><span class="line">    }</span><br><span class="line">    out &lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    return out;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span><br><span class="line"></span>{</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; some{<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">4</span>};</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;some;</span><br><span class="line"></span><br><span class="line">    QuickSelect&lt;<span class="keyword">int</span>&gt; qs(some);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;qs.select(<span class="number">2</span>)&lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    return <span class="number">0</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+	  
+	</div>
+
+	<div>
+  	<center>
+	<div class="pagination">
+<ul class="pagination">
+	 
+				
+    	<li class="prev"><a href="/09-10-2016/问号表达式与防御性编程/" class="alignleft prev"><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>
+  		
+
+        <li><a href="/archives"><i class="fa fa-archive"></i>Archive</a></li>
+
+		
+		   <li class="next"><a href="/05-25-2016/我的emacs配置/" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>         
+        
+	
+</ul>
+</div>
+
+    </center>
+	</div>
+
+    <!-- share -->
+    
+        
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_more" data-cmd="more"></a>
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+        <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+        <a href="#" class="bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+        <a href="#" class="bds_evernotecn" data-cmd="evernotecn" title="分享到印象笔记"></a>
+        <a href="#" class="bds_youdao" data-cmd="youdao" title="分享到有道云笔记"></a>
+        <a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+    </div>
+    <script>
+        window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{}};
+        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+
+
+        
+
+    
+	
+	<!-- comment -->
+	
+<section id="comment">
+  <h2 class="title">留言</h2>
+
+  
+  	 <div class="ds-thread" data-thread-key="08-21-2016/第k大问题/" data-title="第k大问题" data-url="http://araraloren.com/08-21-2016/第k大问题/"></div>  
+  
+</section>
+
+	</div> <!-- col-md-9/col-md-12 -->
+		
+	
+	<div id="side_meta">
+		<div class="col-md-3" id="post_meta"> 
+
+	<!-- date -->
+	
+	<div class="meta-widget">
+	<i class="fa fa-clock-o"></i>
+	08-21-2016 
+	</div>
+	
+
+	<!-- categories -->
+    
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#categorys"><i class="fa fa-folder"></i></a>	
+    <ul id="categorys" class="tag_box list-unstyled collapse in">
+          
+  <li>
+    <li><a href="/categories/c/">c++<span>4</span></a></li> <li><a href="/categories/c/algorithm/">algorithm<span>1</span></a></li>
+  </li>
+
+    </ul>
+	</div>
+	
+
+	<!-- tags -->
+	
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#tags"><i class="fa fa-tags"></i></a>		  
+    <ul id="tags" class="tag_box list-unstyled collapse in">	  
+	    
+  <li><a href="/tags/c/">c++<span>6</span></a></li> <li><a href="/tags/algorithm/">algorithm<span>1</span></a></li>
+    </ul>
+	</div>
+		
+
+	<!-- toc -->
+	<div class="meta-widget">
+	
+	</div>
+	
+    <hr>
+	
+</div><!-- col-md-3 -->
+
+	</div>
+		
+
+</div><!-- row -->
+
+<script type="text/javascript">
+  var duoshuoQuery = { short_name: 'araraloren' };
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';
+    ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+
+	</div>
+  </div>
+  <div class="container-narrow">
+  <footer> <p>
+Copyright &copy 2016 araraloren 保留所有权利
+</p>
+</br>
+<p>
+  &copy; 2017 araraloren
+  
+      with help from <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-freemind/">Freemind</a>.    
+</p>
+
+
+ </footer>
+</div> <!-- container-narrow -->
+  
+
+
+  
+<a id="gotop" href="#">   
+  <span>▲</span> 
+</a>
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/search.js"></script> 
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+
+</body>
+   </html>

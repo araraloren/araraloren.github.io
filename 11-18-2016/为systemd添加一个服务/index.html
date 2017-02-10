@@ -1,0 +1,305 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>为 systemd 添加一个服务示例 | Loren&#39;s Blog</title>
+  <meta name="author" content="araraloren">
+  
+  <meta name="description" content="大家好">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="为 systemd 添加一个服务示例"/>
+  <meta property="og:site_name" content="Loren&#39;s Blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  
+  
+    <link href="/favicon.png" rel="icon">
+  
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/themes/journal.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/responsive.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/highlight.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <script src="/js/jquery-2.0.3.min.js"></script>
+
+  <!-- analytics -->
+  
+
+
+
+</head>
+
+ <body>  
+  <nav id="main-nav" class="navbar  navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <button type="button" class="navbar-header navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	<span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+       <a class="navbar-brand" href="/">Loren&#39;s Blog</a>
+      <div class="collapse navbar-collapse nav-menu">
+		<ul class="nav navbar-nav">
+		  
+		  <li>
+			<a href="/archives" title="All the articles.">
+			  <i class="fa fa-archive"></i>Archives
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/categories" title="All the categories.">
+			  <i class="fa fa-folder"></i>Categories
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/tags" title="All the tags.">
+			  <i class="fa fa-tags"></i>Tags
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/about" title="About me.">
+			  <i class="fa fa-user"></i>About
+			</a>
+		  </li>
+		  
+		</ul>
+      </div>
+    </div> <!-- container -->
+</nav>
+<div class="clearfix"></div>
+
+  <div class="container">
+  	<div class="content">
+    	 
+
+
+	
+		<div class="page-header ">		
+			<h1 class="title "> 为 systemd 添加一个服务示例</h1>
+		</div>		
+	
+
+
+
+
+
+
+<div class="row post">
+	<!-- cols -->
+	
+	<div id="top_meta"></div>
+	<div class="col-md-9">
+	
+
+	<!-- content -->
+	<div class="mypage">		
+	  		
+
+	  <h2 id="&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;&#x670D;&#x52A1;"><a href="#&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;&#x670D;&#x52A1;" class="headerlink" title="&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;&#x670D;&#x52A1;"></a>&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;&#x670D;&#x52A1;</h2><p><code>systemd</code>&#x7684;<code>unit</code>&#x6587;&#x4EF6;&#x5206;&#x5E03;&#x5728;</p>
+<a id="more"></a>
+<blockquote>
+<p>&#x7CFB;&#x7EDF;&#x6A21;&#x5F0F;</p>
+</blockquote>
+<ul>
+<li><code>/usr/lib/systemd/system/</code> &#x8F6F;&#x4EF6;&#x5305;&#x5B89;&#x88C5;</li>
+<li><code>/etc/systemd/system/</code> &#x7CFB;&#x7EDF;&#x7BA1;&#x7406;&#x5458;&#x7EF4;&#x62A4;</li>
+</ul>
+<blockquote>
+<p>&#x7528;&#x6237;&#x6A21;&#x5F0F;</p>
+</blockquote>
+<ul>
+<li><code>/usr/lib/systemd/user/</code> &#x8F6F;&#x4EF6;&#x5305;&#x5B89;&#x88C5;</li>
+<li><code>/etc/systemd/user/</code> &#x7BA1;&#x7406;&#x5458;&#x7EF4;&#x62A4;&#x7684;&#x7528;&#x6237;&#x670D;&#x52A1;</li>
+<li><code>~/.config/systemd/user/</code> &#x7528;&#x6237;&#x81EA;&#x8EAB;&#x7684;&#x670D;&#x52A1;</li>
+</ul>
+<p>&#x65B0;&#x5EFA;&#x670D;&#x52A1;&#x65F6;&#xFF0C;&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;<code>sample.service</code>&#xFF0C;&#x6BD4;&#x5982;&#x8981;&#x5B9E;&#x73B0;&#x91CD;&#x542F;&#x9632;&#x706B;&#x5899;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x683C;&#x5F0F;&#x5982;&#x4E0B;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=Restart firewalld.service # &#x63CF;&#x8FF0;</span><br><span class="line">After=ovirt-engine.service # &#x670D;&#x52A1;&#x5728;&#x5176;&#x4ED6;&#x670D;&#x52A1;&#x4E4B;&#x540E;&#x542F;&#x52A8;</span><br><span class="line">Requires=ovirt-engine.service # &#x670D;&#x52A1;&#x9700;&#x8981;&#x5176;&#x4ED6;&#x670D;&#x52A1;&#x542F;&#x52A8;&#x540E;&#x542F;&#x52A8;</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=oneshot # &#x7C7B;&#x578B;&#xFF0C;&#x53EA;&#x8FD0;&#x884C;&#x4E00;&#x6B21;</span><br><span class="line">ExecStartPre=/usr/bin/env systemctl stop firewalld # &#x542F;&#x52A8;&#x4E4B;&#x524D;&#x6267;&#x884C;</span><br><span class="line">ExecStart=/usr/bin/env systemctl start firewalld # &#x542F;&#x52A8;&#x6267;&#x884C;</span><br><span class="line">KillMode=none # &#x91CD;&#x542F;&#x6A21;&#x5F0F;</span><br><span class="line">Restart=no # &#x91CD;&#x542F;</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target # &#x5B89;&#x88C5;&#x65F6;&#x4F9D;&#x8D56;&#x7684;&#x76EE;&#x6807;</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://wiki.archlinux.org/index.php/systemd_%28%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%29#.E7.9B.AE.E6.A0.87.E8.A1.A8" target="_blank" rel="external">&#x5404;&#x8FD0;&#x884C;&#x76EE;&#x6807;&#x7684;&#x7EA7;&#x522B;</a></p>
+<p>&#x6DFB;&#x52A0;&#x597D;&#x9700;&#x8981;&#x7684;<code>service</code>&#x6587;&#x4EF6;&#x4E4B;&#x540E;&#xFF0C;&#x4F7F;&#x7528;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br></pre></td></tr></table></figure></p>
+<p>&#x91CD;&#x65B0;&#x52A0;&#x8F7D;&#x6240;&#x6709;&#x7684;<code>service</code></p>
+<p>&#x4F7F;&#x7528;<code>systemctl list-units --type=service</code>&#xFF0C;&#x53EF;&#x4EE5;&#x67E5;&#x8BE2;&#x5230;&#x521A;&#x624D;&#x6DFB;&#x52A0;&#x7684;&#x670D;&#x52A1;</p>
+<p>&#x4F7F;&#x7528;<code>systemctl enable sample</code>&#x4F7F;&#x5176;&#x5F00;&#x673A;&#x52A0;&#x8F7D;</p>
+<h2 id="&#x53C2;&#x8003;&#x8D44;&#x6599;"><a href="#&#x53C2;&#x8003;&#x8D44;&#x6599;" class="headerlink" title="&#x53C2;&#x8003;&#x8D44;&#x6599;"></a>&#x53C2;&#x8003;&#x8D44;&#x6599;</h2><p><a href="https://www.freedesktop.org/software/systemd/man/index.html" target="_blank" rel="external">systemd man</a><br><a href="https://www.freedesktop.org/software/systemd/man/bootup.html" target="_blank" rel="external">systemd bootup</a><br><a href="https://www.freedesktop.org/software/systemd/man/systemd.html#" target="_blank" rel="external">systemd</a><br><a href="https://www.freedesktop.org/software/systemd/man/systemctl.html#" target="_blank" rel="external">systemctl</a><br><a href="https://www.freedesktop.org/software/systemd/man/systemd.service.html#" target="_blank" rel="external">systemd.services</a><br><a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html#" target="_blank" rel="external">systemd.unit</a><br><a href="https://wiki.archlinux.org/index.php/systemd_%28%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%29" target="_blank" rel="external">systemd&#x4E2D;&#x6587;wiki</a><br><a href="https://wiki.archlinux.org/index.php/Systemd/User_%28%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%29" target="_blank" rel="external">systemd/User</a><br><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank" rel="external">systemd &#x5B9E;&#x6218;1</a><br><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html" target="_blank" rel="external">systemd &#x5B9E;&#x6218;2</a></p>
+	  
+	</div>
+
+	<div>
+  	<center>
+	<div class="pagination">
+<ul class="pagination">
+	 
+		
+          <li class="prev disabled"><a><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>
+        
+
+        <li><a href="/archives"><i class="fa fa-archive"></i>Archive</a></li>
+
+		
+		   <li class="next"><a href="/11-18-2016/firewalld新建services小记/" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>         
+        
+	
+</ul>
+</div>
+
+    </center>
+	</div>
+
+    <!-- share -->
+    
+        
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_more" data-cmd="more"></a>
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+        <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+        <a href="#" class="bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+        <a href="#" class="bds_evernotecn" data-cmd="evernotecn" title="分享到印象笔记"></a>
+        <a href="#" class="bds_youdao" data-cmd="youdao" title="分享到有道云笔记"></a>
+        <a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+    </div>
+    <script>
+        window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{}};
+        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+
+
+        
+
+    
+	
+	<!-- comment -->
+	
+<section id="comment">
+  <h2 class="title">留言</h2>
+
+  
+  	 <div class="ds-thread" data-thread-key="11-18-2016/为systemd添加一个服务/" data-title="为 systemd 添加一个服务示例" data-url="http://araraloren.com/11-18-2016/为systemd添加一个服务/"></div>  
+  
+</section>
+
+	</div> <!-- col-md-9/col-md-12 -->
+		
+	
+	<div id="side_meta">
+		<div class="col-md-3" id="post_meta"> 
+
+	<!-- date -->
+	
+	<div class="meta-widget">
+	<i class="fa fa-clock-o"></i>
+	11-18-2016 
+	</div>
+	
+
+	<!-- categories -->
+    
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#categorys"><i class="fa fa-folder"></i></a>	
+    <ul id="categorys" class="tag_box list-unstyled collapse in">
+          
+  <li>
+    <li><a href="/categories/linux/">linux<span>3</span></a></li>
+  </li>
+
+    </ul>
+	</div>
+	
+
+	<!-- tags -->
+	
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#tags"><i class="fa fa-tags"></i></a>		  
+    <ul id="tags" class="tag_box list-unstyled collapse in">	  
+	    
+  <li><a href="/tags/linux/">linux<span>4</span></a></li> <li><a href="/tags/systemd/">systemd<span>2</span></a></li>
+    </ul>
+	</div>
+		
+
+	<!-- toc -->
+	<div class="meta-widget">
+	
+	</div>
+	
+    <hr>
+	
+</div><!-- col-md-3 -->
+
+	</div>
+		
+
+</div><!-- row -->
+
+<script type="text/javascript">
+  var duoshuoQuery = { short_name: 'araraloren' };
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';
+    ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+
+	</div>
+  </div>
+  <div class="container-narrow">
+  <footer> <p>
+Copyright &copy 2016 araraloren 保留所有权利
+</p>
+</br>
+<p>
+  &copy; 2017 araraloren
+  
+      with help from <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-freemind/">Freemind</a>.    
+</p>
+
+
+ </footer>
+</div> <!-- container-narrow -->
+  
+
+
+  
+<a id="gotop" href="#">   
+  <span>▲</span> 
+</a>
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/search.js"></script> 
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+
+</body>
+   </html>

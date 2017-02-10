@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>归纳操作符 | Loren&#39;s Blog</title>
+  <meta name="author" content="araraloren">
+  
+  <meta name="description" content="大家好">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="归纳操作符"/>
+  <meta property="og:site_name" content="Loren&#39;s Blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  
+  
+    <link href="/favicon.png" rel="icon">
+  
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/themes/journal.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/font-awesome.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/responsive.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/highlight.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/css/google-fonts.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <script src="/js/jquery-2.0.3.min.js"></script>
+
+  <!-- analytics -->
+  
+
+
+
+</head>
+
+ <body>  
+  <nav id="main-nav" class="navbar  navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <button type="button" class="navbar-header navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	<span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+       <a class="navbar-brand" href="/">Loren&#39;s Blog</a>
+      <div class="collapse navbar-collapse nav-menu">
+		<ul class="nav navbar-nav">
+		  
+		  <li>
+			<a href="/archives" title="All the articles.">
+			  <i class="fa fa-archive"></i>Archives
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/categories" title="All the categories.">
+			  <i class="fa fa-folder"></i>Categories
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/tags" title="All the tags.">
+			  <i class="fa fa-tags"></i>Tags
+			</a>
+		  </li>
+		  
+		  <li>
+			<a href="/about" title="About me.">
+			  <i class="fa fa-user"></i>About
+			</a>
+		  </li>
+		  
+		</ul>
+      </div>
+    </div> <!-- container -->
+</nav>
+<div class="clearfix"></div>
+
+  <div class="container">
+  	<div class="content">
+    	 
+
+
+	
+		<div class="page-header ">		
+			<h1 class="title "> 归纳操作符</h1>
+		</div>		
+	
+
+
+
+
+
+
+<div class="row post">
+	<!-- cols -->
+	
+	<div id="top_meta"></div>
+	<div class="col-md-9">
+	
+
+	<!-- content -->
+	<div class="mypage">		
+	  		
+
+	  <h1 id="&#x5F52;&#x7EB3;&#x64CD;&#x4F5C;&#x7B26; []&#xFF08;reduction operator&#xFF09;"><a href="#&#x5F52;&#x7EB3;&#x64CD;&#x4F5C;&#x7B26;-&#xFF08;reduction-operator&#xFF09;" class="headerlink" title="&#x5F52;&#x7EB3;&#x64CD;&#x4F5C;&#x7B26; []&#xFF08;reduction operator&#xFF09;"></a>&#x5F52;&#x7EB3;&#x64CD;&#x4F5C;&#x7B26; []&#xFF08;reduction operator&#xFF09;</h1><p>&#x5F52;&#x7EB3;&#x5143;&#x64CD;&#x4F5C;&#x7B26;<code>[]</code>&#xFF0C;&#x5C06;&#x7ED9;&#x5B9A;&#x7684; &#x524D;&#x7F00;&#x64CD;&#x4F5C;&#x7B26;&#x4F5C;&#x7528;&#x5728; &#x4E00;&#x4E2A;&#x8981;&#x5F52;&#x7EB3;&#x7684; list&#x4E0A;&#xFF0C;&#x5B83;&#x548C; <code>reduce</code>&#x4F8B;&#x7A0B;&#x7684;&#x8FD0;&#x7B97;&#x7ED3;&#x679C;&#x4E00;&#x81F4;&#x3002;</p>
+<a id="more"></a>
+<p>&#x4EE3;&#x7801;&#x793A;&#x4F8B;&#xFF1A;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">say [+] 1, 2, 3; # 6</span><br><span class="line">say reduce &amp;[+], 1, 2, 3; # 6</span><br></pre></td></tr></table></figure></p>
+<p>&#x5728;&#x65B9;&#x62EC;&#x53F7;&#x548C;&#x64CD;&#x4F5C;&#x7B26;&#x4E4B;&#x95F4;&#x4E0D;&#x5141;&#x8BB8;&#x5B58;&#x5728;&#x7A7A;&#x767D;&#xFF0C;&#x8981;&#x5C06;&#x51FD;&#x6570;&#x66FF;&#x4EE3;&#x64CD;&#x4F5C;&#x7B26;&#xFF0C;&#x9700;&#x8981;&#x989D;&#x5916;&#x7684;&#x4E00;&#x5C42;&#x62EC;&#x53F7;&#xFF1A;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sub plus { $^a + $^b };</span><br><span class="line">say [[&amp;plus]] 1, 2, 3; # 6</span><br></pre></td></tr></table></figure></p>
+<p>list &#x53C2;&#x6570;&#x5C06;&#x4E0D;&#x4F1A;&#x88AB;&#x6574;&#x5E73;&#xFF08;flattening&#xFF09;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x4F60;&#x53EF;&#x4EE5;&#x5411;&#x5F52;&#x7EB3;&#x64CD;&#x4F5C;&#x4F20;&#x9012;&#x4E00;&#x4E2A;&#x5185;&#x5D4C;&#x7684; list&#xFF0C;&#x6267;&#x884C;&#x5BF9; list&#x7684;&#x64CD;&#x4F5C;&#xFF1A;<br><code>say [X~] (1, 2), &lt;a b&gt;; # 1, 2 X~ &lt;a b&gt;</code></p>
+<p>&#x9ED8;&#x8BA4;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x4F1A;&#x8FD4;&#x56DE;&#x5F52;&#x7EB3;&#x64CD;&#x4F5C;&#x7684;&#x6700;&#x7EC8;&#x7ED3;&#x679C;&#x3002;&#x5C06;&#x64CD;&#x4F5C;&#x7B26;&#x52A0;&#x4E0A;&#x524D;&#x7F00;<code>\</code>&#xFF0C;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x6240;&#x6709;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#x7684;&#x60F0;&#x6027;&#xFF08;lazy&#xFF09;list&#xFF0C;&#x8FD9;&#x53EB;&#x505A;&#x201C;&#x4E09;&#x89D2;&#x5F52;&#x7EB3;&#xFF08;triangular reduce&#xFF09;&#x201D;&#xFF0C;&#x5982;&#x679C;&#x5143;&#x64CD;&#x4F5C;&#x7B26;&#x90E8;&#x5206;&#x5DF2;&#x7ECF;&#x5305;&#x542B;<code>\</code>&#xFF0C;&#x7528;&#x4E00;&#x4E2A;<code>[]</code>&#x5F15;&#x7528;&#x8D77;&#x6765;&#xFF08;&#x6BD4;&#x5982;<code>[\[\x]]</code>&#xFF09;&#x3002;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">my @n = [\~] 1 .. *;</span><br><span class="line">say @n[^5]; # (1 12 123 1234 12345)</span><br></pre></td></tr></table></figure></p>
+<p>&#x5BF9;&#x7ED3;&#x679C;&#x6267;&#x884C;&#x591A;&#x4E2A;&#x5F52;&#x7EB3;&#x64CD;&#x4F5C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>reduce</code>&#xFF1A;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">say reduce $_, 1, 2, 3 for [&amp;[+], &amp;[*]]; # 6 \n 6</span><br></pre></td></tr></table></figure></p>
+	  
+	</div>
+
+	<div>
+  	<center>
+	<div class="pagination">
+<ul class="pagination">
+	 
+				
+    	<li class="prev"><a href="/10-13-2016/顶层const与底层const/" class="alignleft prev"><i class="fa fa-arrow-circle-o-left"></i>上一页</a></li>
+  		
+
+        <li><a href="/archives"><i class="fa fa-archive"></i>Archive</a></li>
+
+		
+		   <li class="next"><a href="/09-10-2016/问号表达式与防御性编程/" class="alignright next">下一页<i class="fa fa-arrow-circle-o-right"></i></a></li>         
+        
+	
+</ul>
+</div>
+
+    </center>
+	</div>
+
+    <!-- share -->
+    
+        
+    <div class="bdsharebuttonbox">
+        <a href="#" class="bds_more" data-cmd="more"></a>
+        <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+        <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+        <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+        <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+        <a href="#" class="bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+        <a href="#" class="bds_evernotecn" data-cmd="evernotecn" title="分享到印象笔记"></a>
+        <a href="#" class="bds_youdao" data-cmd="youdao" title="分享到有道云笔记"></a>
+        <a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+    </div>
+    <script>
+        window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"24"},"share":{}};
+        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+    </script>
+
+
+        
+
+    
+	
+	<!-- comment -->
+	
+<section id="comment">
+  <h2 class="title">留言</h2>
+
+  
+  	 <div class="ds-thread" data-thread-key="10-05-2016/归纳操作符/" data-title="归纳操作符" data-url="http://araraloren.com/10-05-2016/归纳操作符/"></div>  
+  
+</section>
+
+	</div> <!-- col-md-9/col-md-12 -->
+		
+	
+	<div id="side_meta">
+		<div class="col-md-3" id="post_meta"> 
+
+	<!-- date -->
+	
+	<div class="meta-widget">
+	<i class="fa fa-clock-o"></i>
+	10-05-2016 
+	</div>
+	
+
+	<!-- categories -->
+    
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#categorys"><i class="fa fa-folder"></i></a>	
+    <ul id="categorys" class="tag_box list-unstyled collapse in">
+          
+  <li>
+    <li><a href="/categories/perl6/">perl6<span>1</span></a></li>
+  </li>
+
+    </ul>
+	</div>
+	
+
+	<!-- tags -->
+	
+	<div class="meta-widget">
+	<a data-toggle="collapse" data-target="#tags"><i class="fa fa-tags"></i></a>		  
+    <ul id="tags" class="tag_box list-unstyled collapse in">	  
+	    
+  <li><a href="/tags/perl6/">perl6<span>1</span></a></li> <li><a href="/tags/操作符/">操作符<span>1</span></a></li>
+    </ul>
+	</div>
+		
+
+	<!-- toc -->
+	<div class="meta-widget">
+	
+	</div>
+	
+    <hr>
+	
+</div><!-- col-md-3 -->
+
+	</div>
+		
+
+</div><!-- row -->
+
+<script type="text/javascript">
+  var duoshuoQuery = { short_name: 'araraloren' };
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';
+    ds.async = true;
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script>
+
+
+
+	</div>
+  </div>
+  <div class="container-narrow">
+  <footer> <p>
+Copyright &copy 2016 araraloren 保留所有权利
+</p>
+</br>
+<p>
+  &copy; 2017 araraloren
+  
+      with help from <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-freemind/">Freemind</a>.    
+</p>
+
+
+ </footer>
+</div> <!-- container-narrow -->
+  
+
+
+  
+<a id="gotop" href="#">   
+  <span>▲</span> 
+</a>
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/search.js"></script> 
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+
+</body>
+   </html>
