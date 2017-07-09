@@ -1,4 +1,6 @@
 language: ruby
+install:
+    - bundle install
 rvm:
     - 2.2.0
 sudo: false
