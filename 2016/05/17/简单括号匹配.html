@@ -45,24 +45,52 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>这是一道来自ACM的简单算法题目，题目要求检测`[]()`两种括号的匹配情况，题目大致是这样的（从网上找的）：</p>
+<p>这是一道来自 <code>ACM</code> 的简单算法题目，题目要求检测 <code>[]()</code>
+两种括号的匹配情况，题目大致是这样的（从网上找的）：</p>
 </div>
-<div class="paragraph">
-<p>&gt;输入
-    第一行输入一个数N（0&lt;N&#8656;100）,表示有N组测试数据。后面的N行输入多组输入数据，每组输入数据都是一个字符串S(S的长度小于10000，且S不是空串），测试数据组数少于5组。数据保证S中只含有"[","]","(",")"四种字符
-输出
-    每组输入数据的输出占一行，如果该字符串中所含的括号是配对的，则输出Yes,如果不配对则输出No
-样例输入
-&gt;    3
-    [(])
-    (])
-    ([[]()])</p>
+<div class="ulist">
+<ul>
+<li>
+<p>输入</p>
+<div class="literalblock">
+<div class="content">
+<pre>第一行输入一个数N（0&lt;N&lt;=100）,表示有N组测试数据。
+后面的N行输入多组输入数据，每组输入数据都是一个字符串S(S的长度小于10000，且S不是空串），测试数据组数少于5组。
+数据保证S中只含有"[","]","(",")"四种字符。</pre>
 </div>
-<div class="paragraph">
-<p>&gt;样例输出
-&gt;    No
-    No
-    Yes</p>
+</div>
+</li>
+<li>
+<p>输出</p>
+<div class="literalblock">
+<div class="content">
+<pre>每组输入数据的输出占一行，如果该字符串中所含的括号是配对的，
+则输出Yes,如果不配对则输出No</pre>
+</div>
+</div>
+</li>
+<li>
+<p>样例输入</p>
+<div class="literalblock">
+<div class="content">
+<pre>3
+[(])
+(])
+([[]()])</pre>
+</div>
+</div>
+</li>
+<li>
+<p>样例输出</p>
+<div class="literalblock">
+<div class="content">
+<pre>No
+No
+Yes</pre>
+</div>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -70,7 +98,8 @@
 <h2 id="c">c++</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>使用c++，看到这种成对的匹配括号，首先想到的肯定是栈，使用栈可以在`O(n)`的时间内匹配出结果。</p>
+<p>使用 <code>c&#43;+</code>，看到这种成对的匹配括号，首先想到的肯定是栈，
+使用栈可以在 <code>O(n)</code> 的时间内匹配出结果。</p>
 </div>
 <div class="sect2">
 <h3 id="stack">stack</h3>
@@ -152,9 +181,9 @@
 <div class="paragraph">
 <p>编译使用的是gcc</p>
 </div>
-<div class="listingblock">
+<div class="literalblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell">g++ -Wall -Wextra -std=c++11 bracket-match.cpp</code></pre>
+<pre>g++ -Wall -Wextra -std=c++11 bracket-match.cpp</pre>
 </div>
 </div>
 </div>
@@ -186,7 +215,7 @@ No</code></pre>
 <h2 id="perl_6">Perl 6</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>使用 Perl 6来实现，首先第一个解法还是使用栈匹配的。</p>
+<p>使用 <code>Perl 6</code> 来实现，首先第一个解法还是使用栈匹配的。</p>
 </div>
 <div class="sect2">
 <h3 id="stack_2">stack</h3>
@@ -265,8 +294,9 @@ No</code></pre>
 <div class="sect2">
 <h3 id="use_regex_substitue_match_bracket">use regex substitue match bracket</h3>
 <div class="paragraph">
-<p>Perl 5的正则是出了名的强大，Perl 6也不例外，下面使用普通的正则去掉成对的括号，
-如果最后字符串为空，那么字符串便是符合要求的。</p>
+<p><code>Perl 5</code> 的正则是出了名的强大，<code>Perl 6</code> 也不例外，
+下面使用普通的正则去掉成对的括号，如果最后字符串为空，
+那么字符串便是符合要求的。</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -294,7 +324,7 @@ for ^$count {
 <div class="sect3">
 <h4 id="input_output_3">input &amp;&amp; output</h4>
 <div class="paragraph">
-<p>下面是测试以及输出。</p>
+<p>下面是测试以及输出：</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -316,8 +346,8 @@ No</code></pre>
 <div class="sect2">
 <h3 id="grammar">grammar</h3>
 <div class="paragraph">
-<p>Perl 6除了提供了正则表达时，还提供了更强大的正则结构 grammar，
-它适合用来匹配那种固定的格式，比如json、ini等具有一定格式的文件内容。</p>
+<p><code>Perl 6</code> 除了提供了正则表达时，还提供了更强大的正则结构 <code>grammar</code>，
+它适合用来匹配那种固定的格式，比如 <code>json</code>、<code>ini</code> 等具有固定格式的文件内容。</p>
 </div>
 <div class="listingblock">
 <div class="content">
