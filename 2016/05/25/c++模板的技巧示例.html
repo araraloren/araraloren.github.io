@@ -1,0 +1,819 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>c++模板的技巧示例</title>
+    <meta name="description" content="C/C++/Perl6 Blog">
+    <meta name="author" content="Your name goes here">
+    <meta name="copyright" content="Maybe consider a Creative Commons license">
+    <link rel="stylesheet" href="../../../css/foundation.css">
+    <link rel="stylesheet" href="../../../css/font-awesome.css">
+    <link rel="stylesheet" href="../../../css/coderay.css">
+    <link rel="stylesheet" href="../../../css/asciidoctor.css">
+    <script src="../../../js/vendor/modernizr.js"></script>
+    <script src="../../../js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="../../../">Loren Blog</a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+        <ul>
+            <h1>c++模板的技巧示例</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>c&#43;+</code> 的模板是 <code>c&#43;+</code> 泛型编程的基础，使用模板我们可以写出很多通用的类，
+再加上 <code>c&#43;+</code> 的其它设施比如强制类型转换操作符、析构函数等使模板变的更加强大，
+下面是一些关于 <code>c&#43;+</code> 模板的技巧的示例。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="resource_acquisition_is_initialization_raii">Resource Acquisition Is Initialization(RAII)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="autoclean">AutoClean</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;stdio.h&gt;</span>
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
+<span class="keyword">class</span> <span class="class">AutoClean</span> {
+<span class="directive">public</span>:
+    AutoClean(T* obj, <span class="directive">void</span> (T::*impl)())
+        :m_object_ptr(obj)
+        ,m_impl(impl)
+    {}
+
+    T* <span class="directive">operator</span> -&gt; (){  <span class="comment">// 利用c++的析构函数，我们可以方便的管理分配的资源</span>
+        <span class="keyword">return</span> <span class="local-variable">this</span>-&gt;m_object_ptr;
+    }
+
+    ~AutoClean()
+    {
+        (m_object_ptr-&gt;*m_impl)(); <span class="comment">// 栈对象会在离开作用域后析构，于是我们的函数自动的调用</span>
+    }
+
+<span class="directive">private</span>:
+    T*  m_object_ptr;
+    <span class="directive">void</span> (T::*m_impl)();
+};
+
+<span class="keyword">class</span> <span class="class">Mutex</span> {
+<span class="directive">public</span>:
+    <span class="directive">void</span> Lock(){
+        puts(<span class="string"><span class="delimiter">&quot;</span><span class="content">Just Lock this resource!</span><span class="delimiter">&quot;</span></span>);
+    }
+
+    <span class="directive">void</span> UnLock(){
+        puts(<span class="string"><span class="delimiter">&quot;</span><span class="content">Oh yeah, UnLock now!</span><span class="delimiter">&quot;</span></span>);
+    }
+};
+
+Mutex mu;
+
+<span class="predefined-type">int</span> main()
+{
+    mu.Lock();
+
+    AutoClean&lt;Mutex&gt; amu(&amp;mu, &amp;Mutex::UnLock);
+
+    puts(<span class="string"><span class="delimiter">&quot;</span><span class="content">Main thread exit!</span><span class="delimiter">&quot;</span></span>);
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="bufferbase">BufferBase</h3>
+<div class="paragraph">
+<p>我们可以使用RAII管理一个数组，它会在离开作用域时自动释放分配的堆内存</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;cstddef&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;cstring&gt;</span>
+
+<span class="directive">using</span> std::size_t;
+<span class="directive">using</span> std::cout;
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Char, <span class="keyword">typename</span> BufferType = Char*&gt;
+<span class="keyword">class</span> <span class="class">BufferBase</span> {
+<span class="directive">public</span>:
+    <span class="keyword">typedef</span> BufferType      buff_type;
+    <span class="keyword">typedef</span> Char            char_type;
+    <span class="keyword">typedef</span> Char            value_type;
+    <span class="keyword">typedef</span> size_t          size_type;
+
+<span class="directive">public</span>:
+    <span class="directive">explicit</span> BufferBase(size_type size)
+        :m_size(size)
+        ,m_buff(<span class="keyword">new</span> char_type[m_size])
+    {}
+
+    ~BufferBase()
+    {
+        <span class="keyword">delete</span> [] m_buff;
+    }
+
+    size_type size() <span class="directive">const</span> { <span class="keyword">return</span> m_size; }
+
+    <span class="directive">operator</span> buff_type () { <span class="keyword">return</span> m_buff; }
+
+    buff_type data() <span class="directive">const</span> { <span class="keyword">return</span> m_buff; }
+
+<span class="directive">private</span>:
+    size_type   m_size;
+    char_type*  m_buff;
+};
+
+<span class="predefined-type">int</span> main()
+{
+    BufferBase&lt;<span class="predefined-type">char</span>&gt; buffer(<span class="integer">128</span>);
+
+    std::strcpy(buffer, <span class="string"><span class="delimiter">&quot;</span><span class="content">I'm your boy</span><span class="delimiter">&quot;</span></span>);
+
+    buffer[<span class="integer">0</span>] = <span class="char">'M'</span>;
+
+    cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">buffer -&gt; </span><span class="delimiter">&quot;</span></span>&lt;&lt;buffer;
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="autoclean2">AutoClean2</h3>
+<div class="paragraph">
+<p>可以设置自己的清理资源函数或者使用默认的delete的模板</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp&gt;
+<span class="keyword">class</span> <span class="class">AutoCleanHelperBase</span>
+{
+<span class="directive">public</span>:
+    AutoCleanHelperBase(Tp* ptr)
+        :m_ptr(ptr)
+    { }
+
+    <span class="directive">virtual</span> <span class="directive">void</span> destroy()
+    {}
+
+<span class="directive">protected</span>:
+    Tp* m_ptr;
+};
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp, <span class="keyword">typename</span> Deleter&gt;
+<span class="keyword">class</span> <span class="class">AutoCleanHelper</span>;
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp&gt;
+<span class="keyword">class</span> <span class="class">AutoCleanHelper</span>&lt;Tp, <span class="directive">void</span>&gt; : <span class="directive">public</span> AutoCleanHelperBase&lt;Tp&gt;
+{
+<span class="directive">public</span>:
+    AutoCleanHelper(Tp* ptr)
+        :AutoCleanHelperBase&lt;Tp&gt;(ptr)
+    { }
+
+    <span class="directive">void</span> destroy()
+    {
+        <span class="keyword">delete</span> <span class="local-variable">this</span>-&gt;m_ptr;
+    }
+};
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp, <span class="keyword">typename</span> Deleter&gt;
+<span class="keyword">class</span> <span class="class">AutoCleanHelper</span>: <span class="directive">public</span> AutoCleanHelperBase&lt;Tp&gt;
+{
+<span class="directive">public</span>:
+    AutoCleanHelper(Tp* ptr, Deleter del)
+        :AutoCleanHelperBase&lt;Tp&gt;(ptr)
+        ,m_del(del)
+    { }
+
+    <span class="directive">void</span> destroy()
+    {
+        (<span class="local-variable">this</span>-&gt;m_ptr-&gt;*m_del)();
+    }
+
+<span class="directive">private</span>:
+    Deleter m_del;
+};
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp&gt;
+<span class="keyword">class</span> <span class="class">AutoClean</span>
+{
+<span class="directive">public</span>:
+    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp1&gt;
+    AutoClean(Tp1* ptr)
+        :m_helper(<span class="keyword">new</span> AutoCleanHelper&lt;Tp1, <span class="directive">void</span>&gt;(ptr))
+    {}
+
+    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp1, <span class="keyword">typename</span> Deleter&gt;
+    AutoClean(Tp1* ptr, Deleter deleter)
+        :m_helper(<span class="keyword">new</span> AutoCleanHelper&lt;Tp1, Deleter&gt;(ptr, deleter))
+    {}
+
+    ~AutoClean()
+    {
+        m_helper-&gt;destroy();
+        <span class="keyword">delete</span> m_helper;
+    }
+
+
+<span class="directive">private</span>:
+    AutoCleanHelperBase&lt;Tp&gt;* m_helper;
+};
+
+<span class="keyword">class</span> <span class="class">CanDestroy</span>
+{
+<span class="directive">public</span>:
+    ~ CanDestroy()
+    {
+        std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">I'm destroy now !!!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+    }
+};
+
+<span class="keyword">class</span> <span class="class">ExplicitDestroy</span>
+{
+<span class="directive">public</span>:
+    <span class="directive">void</span> destroy()
+    {
+        std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">I'm also destroy now !!!</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+    }
+};
+
+<span class="predefined-type">int</span> main()
+{
+    AutoClean&lt;CanDestroy&gt; clean1(<span class="keyword">new</span> CanDestroy);
+
+    AutoClean&lt;ExplicitDestroy&gt; clean2(<span class="keyword">new</span> ExplicitDestroy, &amp;ExplicitDestroy::destroy);
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="annotating_attributes">Annotating Attributes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="sample">sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;stdio.h&gt;</span>
+
+<span class="keyword">struct</span> Obj {
+    <span class="directive">void</span> func() { }
+};
+
+<span class="keyword">template</span> &lt;<span class="directive">void</span> (Obj::*x)()&gt;
+<span class="keyword">struct</span> Trait {
+
+};
+
+<span class="keyword">struct</span> Type {
+    <span class="keyword">typedef</span> <span class="predefined-type">int</span> Tint;
+};
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
+<span class="directive">void</span> f(<span class="keyword">typename</span> T::Tint) {
+    puts(<span class="string"><span class="delimiter">&quot;</span><span class="content">xxx</span><span class="delimiter">&quot;</span></span>);
+}
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
+<span class="directive">void</span> f(T) {
+    puts(<span class="string"><span class="delimiter">&quot;</span><span class="content">www</span><span class="delimiter">&quot;</span></span>);
+}
+
+<span class="predefined-type">int</span> main() {
+    Trait&lt;&amp;Obj::func&gt; t1;
+
+    (<span class="directive">void</span>)t1;
+    f&lt;Type&gt;(<span class="integer">10</span>);
+    f&lt;<span class="predefined-type">int</span>&gt;(<span class="integer">11</span>);
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="overloading_return_value">Overloading Return Value</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>我可以使用重载强制转换操作符来重载返回值</p>
+</div>
+<div class="sect2">
+<h3 id="plus">plus</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;cstdlib&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;string&gt;</span>
+
+<span class="directive">using</span> std::<span class="predefined-type">string</span>;
+<span class="directive">using</span> std::cout;
+<span class="directive">using</span> std::endl;
+
+<span class="keyword">struct</span> plus
+{
+        <span class="predefined-type">int</span> arg1;
+        <span class="predefined-type">int</span> arg2;
+
+        plus(<span class="predefined-type">int</span> x, <span class="predefined-type">int</span> y)
+        {
+                arg1 = x;
+                arg2 = y;
+        }
+
+        <span class="comment">//overload type conversion operator</span>
+        <span class="directive">operator</span> <span class="predefined-type">int</span> () <span class="directive">const</span>
+        {
+                <span class="keyword">return</span> arg1 + arg2;
+        }
+
+        <span class="directive">operator</span> <span class="predefined-type">string</span> () <span class="directive">const</span>
+        {
+                <span class="keyword">return</span> std::to_string(arg1 + arg2);
+        }
+};
+
+<span class="predefined-type">int</span> main()
+{
+        <span class="predefined-type">int</span> i = plus(<span class="integer">1</span>, <span class="integer">2</span>);
+
+        <span class="predefined-type">string</span> s = plus(<span class="integer">1</span>, <span class="integer">2</span>);
+
+        std::cout &lt;&lt;i&lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content"> -- </span><span class="delimiter">&quot;</span></span>&lt;&lt;s&lt;&lt;std::endl;
+
+        <span class="keyword">return</span> EXIT_SUCCESS;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="print_array_help">Print Array Help</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="print_array">print array</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, size_t N&gt;
+<span class="directive">void</span> print(T(&amp;array)[N])
+{
+    <span class="keyword">for</span> (<span class="directive">auto</span> e: array) {
+        std::cout &lt;&lt;e&lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="char">\t</span><span class="delimiter">&quot;</span></span>;
+    }
+    std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+}
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> It&gt;
+<span class="directive">void</span> print(It beg, It end)
+{
+    <span class="keyword">for</span> (;beg &lt; end;++ beg) {
+        std::cout &lt;&lt;*beg&lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="char">\t</span><span class="delimiter">&quot;</span></span>;
+    }
+    std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="get_user_input">Get User Input</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="get">get</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
+T get()
+{
+    T in;
+
+    <span class="keyword">do</span> {
+        <span class="keyword">if</span> (!(std::cin &gt;&gt;in)) {
+            std::cin.clear(), std::cin.ignore();
+        } <span class="keyword">else</span> {
+            <span class="keyword">break</span>;
+        }
+    }<span class="keyword">while</span>(<span class="predefined-constant">true</span>);
+
+    <span class="keyword">return</span> in;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="property">Property</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>c&#43;+</code> 没有 <strong>属性</strong> 这一设施，不过 <code>Imperfect c&#43;+</code> 中的讲解了如何使用 <code>c&#43;+</code> 的模板来实现属性</p>
+</div>
+<div class="sect2">
+<h3 id="readonly_property">ReadOnly Property</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="comment">// 这是一个不可移植的语法，不过常用编译器都支持</span>
+<span class="preprocessor">#define</span> SET_TEMPLATE_ARG_AS_FRINED(c)  \
+    fri<span class="preprocessor">#</span><span class="preprocessor">#end</span> c
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> V, <span class="keyword">typename</span> R, <span class="keyword">typename</span> F&gt;
+<span class="keyword">class</span> <span class="class">ReadOnlyProperty</span>
+{
+<span class="directive">public</span>:
+    <span class="keyword">typedef</span> V value_type;
+    <span class="keyword">typedef</span> R reference_type;
+    <span class="keyword">typedef</span> F friend_type;
+    <span class="keyword">typedef</span> ReadOnlyProperty&lt;value_type,    \
+        reference_type, friend_type&gt; class_type;
+<span class="directive">private</span>:
+    ReadOnlyProperty()
+    {}
+
+    ReadOnlyProperty(<span class="directive">const</span> value_type&amp; r)
+        :m_value(r)
+    {}
+
+    SET_TEMPLATE_ARG_AS_FRINED(friend_type);
+
+<span class="directive">public</span>:
+    <span class="directive">operator</span> reference_type () <span class="directive">const</span>
+    {
+        <span class="keyword">return</span> m_value;
+    }
+
+<span class="directive">private</span>:
+    value_type m_value;
+
+<span class="directive">private</span>:
+    ReadOnlyProperty(<span class="directive">const</span> ReadOnlyProperty &amp;r) = <span class="keyword">delete</span>; <span class="comment">//c++11</span>
+    ReadOnlyProperty&amp; <span class="directive">operator</span> = (<span class="directive">const</span> ReadOnlyProperty&amp;) = <span class="keyword">delete</span>;
+};</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="readonly_external_property">ReadOnly External Property</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> V, <span class="keyword">typename</span> R&gt;
+<span class="keyword">class</span> <span class="class">ReadOnlyExternalProperty</span>
+{
+<span class="directive">public</span>:
+    <span class="keyword">typedef</span> V value_type;
+    <span class="keyword">typedef</span> R reference_type;
+    <span class="keyword">typedef</span> ReadOnlyExternalProperty&lt;value_type,    \
+        reference_type&gt; class_type;
+<span class="directive">public</span>:
+    ReadOnlyExternalProperty(value_type&amp; vref)
+        :m_vref(vref)
+    {}
+
+    <span class="directive">operator</span> reference_type() <span class="directive">const</span>
+    {
+        <span class="keyword">return</span> m_vref;
+    }
+
+<span class="directive">private</span>:
+
+    value_type&amp; m_vref;
+<span class="directive">private</span>:
+    ReadOnlyExternalProperty(<span class="directive">const</span> ReadOnlyExternalProperty&amp;) = <span class="keyword">delete</span>;
+    ReadOnlyExternalProperty&amp; <span class="directive">operator</span> = (<span class="directive">const</span> ReadOnlyExternalProperty&amp;) = <span class="keyword">delete</span>;
+};</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample_2">sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="keyword">class</span> <span class="class">LinkList</span> {
+<span class="directive">public</span>:
+    ReadOnlyProperty&lt;<span class="predefined-type">int</span>, <span class="predefined-type">int</span>, LinkList&gt; Count;
+    ReadOnlyExternalProperty&lt;size_t, size_t&gt; Length;
+
+<span class="directive">public</span>:
+    LinkList()
+        :Count(<span class="integer">0</span>)
+        ,Length(m_length)
+        ,m_length(<span class="integer">0</span>)
+    {}
+
+    <span class="directive">void</span> add()
+    {
+        Count.m_value ++;
+        m_length ++;
+    }
+
+    <span class="directive">void</span> del()
+    {
+        Count.m_value --;
+        m_length --;
+    }
+<span class="directive">private</span>:
+    size_t m_length;
+};
+
+<span class="predefined-type">int</span> main()
+{
+    LinkList list;
+
+    cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">create a list with count -&gt; </span><span class="delimiter">&quot;</span></span>&lt;&lt;list.Count&lt;&lt;endl;
+    cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">create a list with length -&gt; </span><span class="delimiter">&quot;</span></span>&lt;&lt;list.Length&lt;&lt;endl;
+
+    list.add();
+    cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">after add -&gt; </span><span class="delimiter">&quot;</span></span>&lt;&lt;list.Count&lt;&lt;endl;
+    cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">after add -&gt; </span><span class="delimiter">&quot;</span></span>&lt;&lt;list.Length&lt;&lt;endl;
+
+    list.del();
+    cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">after del -&gt; </span><span class="delimiter">&quot;</span></span>&lt;&lt;list.Count&lt;&lt;endl;
+    cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">after add -&gt; </span><span class="delimiter">&quot;</span></span>&lt;&lt;list.Length&lt;&lt;endl;
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="scoping">Scoping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>这也是来自 <code>Imperfect c&#43;+</code> 中的例子，作用域守卫可以在很多情况下帮助你写出优美的代码</p>
+</div>
+<div class="sect2">
+<h3 id="increment_scoping">Increment Scoping</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
+<span class="keyword">struct</span> SimpleIncrementer
+{
+    <span class="directive">void</span> <span class="directive">operator</span> ()(T&amp; t)
+    {
+        ++t;
+    }
+};
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
+<span class="keyword">struct</span> SimpleDecrementer
+{
+    <span class="directive">void</span> <span class="directive">operator</span> ()(T&amp; t)
+    {
+        --t;
+    }
+};
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T,
+          <span class="keyword">typename</span> F = SimpleIncrementer&lt;T&gt;,
+          <span class="keyword">typename</span> S = SimpleDecrementer&lt;T&gt;&gt;
+<span class="keyword">class</span> <span class="class">IncrementScoping</span>
+{
+<span class="directive">public</span>:
+    <span class="keyword">typedef</span> T value_type;
+    <span class="keyword">typedef</span> F first_op;
+    <span class="keyword">typedef</span> S second_op;
+
+    <span class="directive">explicit</span> IncrementScoping(value_type&amp; ref)
+        :m_ref(ref)
+    {
+        first_op()(m_ref);
+    }
+
+    ~IncrementScoping()
+    {
+        second_op()(m_ref);
+    }
+
+<span class="directive">private</span>:
+    value_type&amp; m_ref;
+};</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="value_change_scoping">Value Change Scoping</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;
+<span class="keyword">class</span> <span class="class">ValueScoping</span>
+{
+<span class="directive">public</span>:
+    <span class="keyword">typedef</span> T value_type;
+
+    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> O&gt;
+    ValueScoping(value_type&amp; var, <span class="directive">const</span> O&amp; set)
+        :m_ref(var)
+        ,m_restore(var)
+    {
+        m_ref = set;
+    }
+
+    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> O&gt;
+    ValueScoping(value_type&amp; var, <span class="directive">const</span> O&amp; set, <span class="directive">const</span> value_type&amp; restore)
+        :m_ref(var)
+        ,m_restore(restore)
+    {
+        m_ref = set;
+    }
+
+    ~ValueScoping()
+    {
+        m_ref = m_restore;
+    }
+
+<span class="directive">private</span>:
+    value_type&amp;     m_ref;
+    value_type      m_restore;
+};</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lock_scoping">Lock Scoping</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> L&gt;
+<span class="keyword">struct</span> LockHelper
+{
+    <span class="directive">static</span> <span class="directive">void</span> lock(L&amp; l)
+    {
+        <span class="comment">//add this inline *real_lock* function to your class header</span>
+        real_lock(l);
+    }
+
+    <span class="directive">static</span> <span class="directive">void</span> unlock(L&amp; l)
+    {
+        <span class="comment">//add this inline *real_unlock* function to your class header</span>
+        real_unlock(l);
+    }
+};
+
+<span class="keyword">template</span> &lt;<span class="keyword">typename</span> L,
+          <span class="keyword">typename</span> H = LockHelper&lt;L&gt;&gt;
+<span class="keyword">class</span> <span class="class">LockScoping</span>
+{
+<span class="directive">public</span>:
+    <span class="directive">explicit</span> LockScoping(L&amp; lock)
+        :m_lock(lock)
+    {
+        H::lock(m_lock);
+    }
+
+    ~LockScoping()
+    {
+        H::unlock(m_lock);
+    }
+
+<span class="directive">private</span>:
+    L&amp; m_lock;
+};</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sample_3">sample</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;string&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+
+<span class="predefined-type">int</span> main()
+{
+                {
+            <span class="predefined-type">int</span> var1 = <span class="integer">0</span>;
+
+            std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">Before .. value = </span><span class="delimiter">&quot;</span></span>&lt;&lt;var1&lt;&lt;std::endl;
+            {
+                IncrementScoping&lt;<span class="predefined-type">int</span>&gt; int_scope(var1);
+
+                std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">Current value = </span><span class="delimiter">&quot;</span></span>&lt;&lt;var1&lt;&lt;std::endl;
+            }
+
+            std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">After .. value = </span><span class="delimiter">&quot;</span></span>&lt;&lt;var1&lt;&lt;std::endl;
+        }
+
+        {
+            std::<span class="predefined-type">string</span> original_str = <span class="string"><span class="delimiter">&quot;</span><span class="content">Original</span><span class="delimiter">&quot;</span></span>;
+
+            std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">Before .. original_str = </span><span class="delimiter">&quot;</span></span>&lt;&lt;original_str&lt;&lt;std::endl;
+            {
+                ValueScoping&lt;std::<span class="predefined-type">string</span>&gt; str_scope(original_str, <span class="string"><span class="delimiter">&quot;</span><span class="content">Temp Value</span><span class="delimiter">&quot;</span></span>);
+
+                std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">Current original_str = </span><span class="delimiter">&quot;</span></span>&lt;&lt;original_str&lt;&lt;std::endl;
+            }
+
+            std::cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">After .. original_str = </span><span class="delimiter">&quot;</span></span>&lt;&lt;original_str&lt;&lt;std::endl;
+        }
+
+            <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+        </ul>
+    </div>
+
+    <!-- End Main Content -->
+    <!-- Sidebar -->
+    <aside class="large-3 columns">
+
+        <h4>Posts</h4>
+        <ul id="posts" class="posts nav">
+            
+            <li>
+                <a href="/2016/05/25/emacs-config.html">emacs config</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/25/c++%E6%A8%A1%E6%9D%BF%E7%9A%84%E6%8A%80%E5%B7%A7%E7%A4%BA%E4%BE%8B.html">c++模板的技巧示例</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/17/%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D.html">简单括号匹配</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/15/IA32-%E7%AE%97%E6%9C%AF%E7%A7%BB%E4%BD%8D%E5%92%8C%E9%80%BB%E8%BE%91%E7%A7%BB%E4%BD%8D.html">IA-32算术移位与逻辑移位</a>
+            </li>
+            
+        </ul>
+
+        <div class="panel">
+            <h5>Loren Blog</h5>
+
+            <p>将会写一些关于C/C++/Perl6 的小文章，记录一些知识点。</p>
+        </div>
+
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>© 2017 araraloren</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="../../../js/vendor/jquery.js"></script>
+<script src="../../../js/foundation.min.js"></script>
+<script>
+$(document).foundation();
+var doc = document.documentElement;
+doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>

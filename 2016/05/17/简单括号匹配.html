@@ -1,0 +1,458 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单括号匹配</title>
+    <meta name="description" content="C/C++/Perl6 Blog">
+    <meta name="author" content="Your name goes here">
+    <meta name="copyright" content="Maybe consider a Creative Commons license">
+    <link rel="stylesheet" href="../../../css/foundation.css">
+    <link rel="stylesheet" href="../../../css/font-awesome.css">
+    <link rel="stylesheet" href="../../../css/coderay.css">
+    <link rel="stylesheet" href="../../../css/asciidoctor.css">
+    <script src="../../../js/vendor/modernizr.js"></script>
+    <script src="../../../js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="../../../">Loren Blog</a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+        <ul>
+            <h1>简单括号匹配</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>这是一道来自ACM的简单算法题目，题目要求检测`[]()`两种括号的匹配情况，题目大致是这样的（从网上找的）：</p>
+</div>
+<div class="paragraph">
+<p>&gt;输入
+    第一行输入一个数N（0&lt;N&#8656;100）,表示有N组测试数据。后面的N行输入多组输入数据，每组输入数据都是一个字符串S(S的长度小于10000，且S不是空串），测试数据组数少于5组。数据保证S中只含有"[","]","(",")"四种字符
+输出
+    每组输入数据的输出占一行，如果该字符串中所含的括号是配对的，则输出Yes,如果不配对则输出No
+样例输入
+&gt;    3
+    [(])
+    (])
+    ([[]()])</p>
+</div>
+<div class="paragraph">
+<p>&gt;样例输出
+&gt;    No
+    No
+    Yes</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="c">c++</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>使用c++，看到这种成对的匹配括号，首先想到的肯定是栈，使用栈可以在`O(n)`的时间内匹配出结果。</p>
+</div>
+<div class="sect2">
+<h3 id="stack">stack</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>        <span class="comment">//for cin cout</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;stack&gt;</span>        <span class="comment">// for stack</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;string&gt;</span>        <span class="comment">// for string</span>
+
+<span class="directive">using</span> std::cin;
+<span class="directive">using</span> std::cout;
+<span class="directive">using</span> std::endl;
+<span class="directive">using</span> std::<span class="predefined-type">string</span>;
+<span class="directive">using</span> std::stack;
+
+<span class="predefined-type">bool</span> checkBracket(<span class="directive">const</span> <span class="predefined-type">string</span>&amp; str)
+{
+    <span class="comment">/*
+     *  '[' -&gt; 91 ']' -&gt; 93
+     *  '(' -&gt; 40 ')' -&gt; 41
+    */</span>
+    <span class="predefined-type">string</span>::const_iterator cit = str.begin();
+    <span class="predefined-type">string</span>::const_iterator end = str.end();
+
+    stack&lt;<span class="predefined-type">char</span>&gt; brackets;
+
+    <span class="comment">// traverse user input string 遍历用户输入的字符串</span>
+    <span class="keyword">for</span> (;cit != end;cit ++) {
+        <span class="comment">//if *cit is [ or ( 如果字符是 [ 或者 ( 即入栈</span>
+        <span class="keyword">if</span> (brackets.empty() || *cit == <span class="integer">91</span> || *cit == <span class="integer">40</span>) {
+            brackets.push(*cit);
+        } <span class="keyword">else</span> { <span class="comment">// 如果是其它字符，取出栈顶的字符与当前字符比较</span>
+            <span class="predefined-type">char</span> &amp; ch = brackets.top();
+
+            <span class="comment">// match bracket 匹配后则将栈顶的字符pop掉，否则失败</span>
+            <span class="keyword">if</span> ((*cit == <span class="integer">93</span> &amp;&amp; ch == <span class="integer">91</span>) || (*cit == <span class="integer">41</span> &amp;&amp; ch == <span class="integer">40</span>)) {
+                brackets.pop();
+            } <span class="keyword">else</span> {
+                <span class="keyword">return</span> <span class="predefined-constant">false</span>;
+            }
+        }
+    }
+         <span class="comment">//栈为空的时候 匹配成功</span>
+    <span class="keyword">return</span> brackets.empty();
+}
+
+<span class="predefined-type">int</span> main()
+{
+<span class="comment">/*
+        程序首先接受一个整数n的输入
+    然后读取n个字符串并返回匹配结果
+*/</span>
+    size_t count = <span class="integer">0</span>;
+
+    <span class="keyword">do</span> {
+        <span class="keyword">if</span> (!(cin &gt;&gt;count)) {
+            cin.clear(), cin.ignore();
+        } <span class="keyword">else</span> {
+            <span class="keyword">break</span>;
+        }
+    } <span class="keyword">while</span> (<span class="predefined-constant">true</span>);
+
+    <span class="predefined-type">string</span> str;
+    <span class="keyword">for</span> (size_t i = <span class="integer">0</span>;i &lt; count;i ++) {
+        cin &gt;&gt;str;
+        <span class="keyword">if</span> (checkBracket(str)) {
+            cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">Yes</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+        } <span class="keyword">else</span> {
+            cout &lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">No</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+        }
+    }
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="compile">compile</h4>
+<div class="paragraph">
+<p>编译使用的是gcc</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell">g++ -Wall -Wextra -std=c++11 bracket-match.cpp</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="input_output">input &amp;&amp; output</h4>
+<div class="paragraph">
+<p>下面是测试以及输出</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>5
+()()()[][][]
+Yes
+((()))[[[]]]
+Yes
+(([])[]((()))[[]])
+Yes
+((())))
+No
+((]]
+No</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="perl_6">Perl 6</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>使用 Perl 6来实现，首先第一个解法还是使用栈匹配的。</p>
+</div>
+<div class="sect2">
+<h3 id="stack_2">stack</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6">#!/usr/bin/env perl6
+# 上面是 Perl 6的shebang
+
+# $*IN是 Perl 6的标准输入，我们可以用它获取用户的输入
+my \stdin = $*IN;
+
+# 获取样例个数
+my $count = +stdin.get();
+
+# 配对表
+my %table = 93 =&gt; 91, 41 =&gt; 40;
+
+# 左括号
+my @list = (91, 40);
+
+# for 循环进行 $count 次，即从 0 ~ $count - 1
+for ^$count {
+    # 获取一行输入
+    my $str = ~stdin.get();
+
+        ## use ASCII encoding Str before match bracket
+    my @chars = $str.encode('ASCII')[0 .. * - 1];
+
+    my @stack;
+
+    # str只有编码之后才可以遍历，我们使用for遍历整个str的字符
+    for @chars -&gt; $ch {
+        # 栈为空，并且当前字符在@list里面
+        # (elem) 用于判断，是一个集合运算，相当与∈，更多东西可以参见官方文档，或者
+        # 我的翻译（未来会有）
+                if @stack ~~ 0 || ($ch (elem) @list) {
+                        @stack.push: $ch;
+                } else {
+            # 匹配到成对括号，栈顶出栈
+                        if @stack[* - 1] == %table{$ch} {
+                            @stack.pop();
+                        } else {
+                            say &quot;No&quot;;
+                            exit;
+                        }
+                }
+    }
+
+    # 当栈为空是说明匹配成功
+    say @stack ~~ 0 ?? &quot;Yes&quot; !! &quot;No&quot;;
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="input_output_2">input &amp;&amp; output</h4>
+<div class="paragraph">
+<p>下面是测试输入以及输出。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>5
+()()()[][][]
+Yes
+((()))[[[]]]
+Yes
+(([])[]((()))[[]])
+Yes
+((())))
+No
+((]]
+No</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="use_regex_substitue_match_bracket">use regex substitue match bracket</h3>
+<div class="paragraph">
+<p>Perl 5的正则是出了名的强大，Perl 6也不例外，下面使用普通的正则去掉成对的括号，
+如果最后字符串为空，那么字符串便是符合要求的。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6">#!/usr/bin/env perl6
+
+use v6;
+
+my \stdin = $*IN;
+
+my Int $count = +stdin.get();
+
+for ^$count {
+    my Str $str = stdin.get();
+
+         ## 利用正则替换掉 [] ()
+    # s/// 即 Perl 6里面的正则替换，
+    # || 是 Perl 6中的 折一 运算，这意味着要匹配到 [] 或者 () 中的一种
+    # + 即是匹配一个或者以上，然后全部替换为空
+    last unless $str ~~ s:g/[ \[ \] || \( \) ]+//;
+
+    say $str.chars ?? &quot;No&quot; !! &quot;Yes&quot;;
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="input_output_3">input &amp;&amp; output</h4>
+<div class="paragraph">
+<p>下面是测试以及输出。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>5
+()()()[][][]
+Yes
+((()))[[[]]]
+Yes
+(([])[]((()))[[]])
+Yes
+((())))
+No
+((]]
+No</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="grammar">grammar</h3>
+<div class="paragraph">
+<p>Perl 6除了提供了正则表达时，还提供了更强大的正则结构 grammar，
+它适合用来匹配那种固定的格式，比如json、ini等具有一定格式的文件内容。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6">#!/usr/bin/env perl6
+
+# Perl 6中的异常，跟其他语言差不多
+class X::BrakcetNotMatch is Exception { }
+
+# grammar 的声明，和class的声明格式很像
+grammar Bracket {
+    rule TOP { # 一个 grammar 一定要有一个 TOP rule
+        &lt;pair&gt;*
+    }
+    token pair { # pair的定义是递归式的
+        &lt;bl&gt;&lt;br&gt; |
+        &lt;bl&gt;&lt;pair&gt;+&lt;br&gt;
+        &lt;?{
+            # token 可以附带语句，进行一些必要的处理
+            state %table = '(' =&gt; ')', '[' =&gt; ']';
+
+            # 这里用来检测匹配到字符以及括号的匹配结果
+            X::BrakcetNotMatch.new().throw unless %table{$&lt;bl&gt;}:exists;
+            X::BrakcetNotMatch.new().throw unless %table{$&lt;bl&gt;} eq $&lt;br&gt;;
+        }&gt;
+    }
+    token bl { # 用来匹配左括号中的一个
+        &lt;[ \( \[ ]&gt;
+    }
+    token br { # 用来匹配右括号中的一个
+        &lt;[ \) \] ]&gt;
+    }
+}
+
+# 这里直接用 例子来测试，没有输入输出
+my @sample = [
+    &quot;()[]&quot;,
+    &quot;(())[[]]&quot;,
+    &quot;([][()])&quot;,
+    &quot;((())&quot;,
+    &quot;((]]&quot;,
+];
+
+for @sample -&gt; $sample {
+    try {
+        # 匹配成功，语句会执行到&quot;Yes&quot;，否则抛出异常
+        Bracket.parse($sample);
+        say &quot;Yes&quot;;
+        CATCH { # CATCH 是 Perl 6中的异常处理语句块
+            when X::BrakcetNotMatch {
+                say &quot;No&quot;;
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="output">output</h4>
+<div class="paragraph">
+<p>上面脚本的输出</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>Yes
+Yes
+Yes
+Yes
+No</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+        </ul>
+    </div>
+
+    <!-- End Main Content -->
+    <!-- Sidebar -->
+    <aside class="large-3 columns">
+
+        <h4>Posts</h4>
+        <ul id="posts" class="posts nav">
+            
+            <li>
+                <a href="/2016/05/25/emacs-config.html">emacs config</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/25/c++%E6%A8%A1%E6%9D%BF%E7%9A%84%E6%8A%80%E5%B7%A7%E7%A4%BA%E4%BE%8B.html">c++模板的技巧示例</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/17/%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D.html">简单括号匹配</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/15/IA32-%E7%AE%97%E6%9C%AF%E7%A7%BB%E4%BD%8D%E5%92%8C%E9%80%BB%E8%BE%91%E7%A7%BB%E4%BD%8D.html">IA-32算术移位与逻辑移位</a>
+            </li>
+            
+        </ul>
+
+        <div class="panel">
+            <h5>Loren Blog</h5>
+
+            <p>将会写一些关于C/C++/Perl6 的小文章，记录一些知识点。</p>
+        </div>
+
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>© 2017 araraloren</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="../../../js/vendor/jquery.js"></script>
+<script src="../../../js/foundation.min.js"></script>
+<script>
+$(document).foundation();
+var doc = document.documentElement;
+doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>
