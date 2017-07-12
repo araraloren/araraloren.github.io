@@ -20,7 +20,6 @@
 
 
 <!-- Nav Bar -->
-
 <nav class="top-bar" data-topbar>
     <ul class="title-area">
         <!-- Title Area -->
@@ -41,29 +40,28 @@
 
     <!-- Main Blog Content -->
     <div class="large-9 columns" role="content">
-
-        {{ content }}
-
+        <ul>
+            {{content}}
+        </ul>
     </div>
 
     <!-- End Main Content -->
-
     <!-- Sidebar -->
-
     <aside class="large-3 columns">
 
         <h4>Posts</h4>
         <ul id="posts" class="posts nav">
-            {% for post in site.posts limit: 5 %}
-            <li><a href=".{{ post.url }}">{{ post.navtitle }}</a></li>
+            {% for post in site.posts %}
+            <li>
+                <a href="{{ post.url }}">{{ post.navtitle }}</a>
+            </li>
             {% endfor %}
         </ul>
 
         <div class="panel">
-            <h5>Featured</h5>
+            <h5>Loren Blog</h5>
 
-            <p>Pork drumstick turkey fugiat. Tri-tip elit turducken pork chop in. Swine short ribs meatball irure bacon
-                nulla pork belly cupidatat meatloaf cow.</p>
+            <p>将会写一些关于C/C++/Perl6 的小文章，记录一些知识点。</p>
         </div>
 
     </aside>
@@ -81,7 +79,7 @@
         <hr>
         <div class="row">
             <div class="large-12 columns">
-                <p>Footer</p>
+                <p>© 2017 araraloren</p>
             </div>
         </div>
     </div>

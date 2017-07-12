@@ -1,0 +1,658 @@
+= c++模板的技巧示例
+:toc-title: contents
+:showtitle:
+:page-navtitle: c++模板的技巧示例
+:page-excerpt: C++模板技巧
+:page-root: ../../../
+
+`c{plus}+` 的模板是 `c{plus}+` 泛型编程的基础，使用模板我们可以写出很多通用的类，
+再加上 `c{plus}+` 的其它设施比如强制类型转换操作符、析构函数等使模板变的更加强大，
+下面是一些关于 `c{plus}+` 模板的技巧的示例。
+
+== Resource Acquisition Is Initialization(RAII)
+
+=== AutoClean
+
+```cpp
+#include <stdio.h>
+
+template <typename T>
+class AutoClean {
+public:
+    AutoClean(T* obj, void (T::*impl)())
+        :m_object_ptr(obj)
+        ,m_impl(impl)
+    {}
+
+    T* operator -> (){  // 利用c++的析构函数，我们可以方便的管理分配的资源
+        return this->m_object_ptr;
+    }
+
+    ~AutoClean()
+    {
+        (m_object_ptr->*m_impl)(); // 栈对象会在离开作用域后析构，于是我们的函数自动的调用
+    }
+
+private:
+    T*  m_object_ptr;
+    void (T::*m_impl)();
+};
+
+class Mutex {
+public:
+    void Lock(){
+        puts("Just Lock this resource!");
+    }
+
+    void UnLock(){
+        puts("Oh yeah, UnLock now!");
+    }
+};
+
+Mutex mu;
+
+int main()
+{
+    mu.Lock();
+
+    AutoClean<Mutex> amu(&mu, &Mutex::UnLock);
+
+    puts("Main thread exit!");
+
+    return 0;
+}
+```
+
+=== BufferBase
+
+我们可以使用RAII管理一个数组，它会在离开作用域时自动释放分配的堆内存
+
+```cpp
+#include <cstddef>
+#include <iostream>
+#include <cstring>
+
+using std::size_t;
+using std::cout;
+
+template <typename Char, typename BufferType = Char*>
+class BufferBase {
+public:
+    typedef BufferType      buff_type;
+    typedef Char            char_type;
+    typedef Char            value_type;
+    typedef size_t          size_type;
+
+public:
+    explicit BufferBase(size_type size)
+        :m_size(size)
+        ,m_buff(new char_type[m_size])
+    {}
+
+    ~BufferBase()
+    {
+        delete [] m_buff;
+    }
+
+    size_type size() const { return m_size; }
+
+    operator buff_type () { return m_buff; }
+
+    buff_type data() const { return m_buff; }
+
+private:
+    size_type   m_size;
+    char_type*  m_buff;
+};
+
+int main()
+{
+    BufferBase<char> buffer(128);
+
+    std::strcpy(buffer, "I'm your boy");
+
+    buffer[0] = 'M';
+
+    cout <<"buffer -> "<<buffer;
+
+    return 0;
+}
+```
+
+=== AutoClean2
+
+可以设置自己的清理资源函数或者使用默认的delete的模板
+
+```cpp
+template <typename Tp>
+class AutoCleanHelperBase
+{
+public:
+    AutoCleanHelperBase(Tp* ptr)
+        :m_ptr(ptr)
+    { }
+
+    virtual void destroy()
+    {}
+
+protected:
+    Tp* m_ptr;
+};
+
+template <typename Tp, typename Deleter>
+class AutoCleanHelper;
+
+template <typename Tp>
+class AutoCleanHelper<Tp, void> : public AutoCleanHelperBase<Tp>
+{
+public:
+    AutoCleanHelper(Tp* ptr)
+        :AutoCleanHelperBase<Tp>(ptr)
+    { }
+
+    void destroy()
+    {
+        delete this->m_ptr;
+    }
+};
+
+template <typename Tp, typename Deleter>
+class AutoCleanHelper: public AutoCleanHelperBase<Tp>
+{
+public:
+    AutoCleanHelper(Tp* ptr, Deleter del)
+        :AutoCleanHelperBase<Tp>(ptr)
+        ,m_del(del)
+    { }
+
+    void destroy()
+    {
+        (this->m_ptr->*m_del)();
+    }
+
+private:
+    Deleter m_del;
+};
+
+template <typename Tp>
+class AutoClean
+{
+public:
+    template <typename Tp1>
+    AutoClean(Tp1* ptr)
+        :m_helper(new AutoCleanHelper<Tp1, void>(ptr))
+    {}
+
+    template <typename Tp1, typename Deleter>
+    AutoClean(Tp1* ptr, Deleter deleter)
+        :m_helper(new AutoCleanHelper<Tp1, Deleter>(ptr, deleter))
+    {}
+
+    ~AutoClean()
+    {
+        m_helper->destroy();
+        delete m_helper;
+    }
+
+
+private:
+    AutoCleanHelperBase<Tp>* m_helper;
+};
+
+class CanDestroy
+{
+public:
+    ~ CanDestroy()
+    {
+        std::cout <<"I'm destroy now !!!\n";
+    }
+};
+
+class ExplicitDestroy
+{
+public:
+    void destroy()
+    {
+        std::cout <<"I'm also destroy now !!!\n";
+    }
+};
+
+int main()
+{
+    AutoClean<CanDestroy> clean1(new CanDestroy);
+
+    AutoClean<ExplicitDestroy> clean2(new ExplicitDestroy, &ExplicitDestroy::destroy);
+
+    return 0;
+}
+```
+
+== Annotating Attributes
+
+=== sample
+
+```cpp
+#include <stdio.h>
+
+struct Obj {
+    void func() { }
+};
+
+template <void (Obj::*x)()>
+struct Trait {
+
+};
+
+struct Type {
+    typedef int Tint;
+};
+
+template <typename T>
+void f(typename T::Tint) {
+    puts("xxx");
+}
+
+template <typename T>
+void f(T) {
+    puts("www");
+}
+
+int main() {
+    Trait<&Obj::func> t1;
+
+    (void)t1;
+    f<Type>(10);
+    f<int>(11);
+
+    return 0;
+}
+```
+
+== Overloading Return Value
+
+我可以使用重载强制转换操作符来重载返回值
+
+=== plus
+
+```cpp
+#include <iostream>
+#include <cstdlib>
+#include <string>
+
+using std::string;
+using std::cout;
+using std::endl;
+
+struct plus
+{
+	int arg1;
+	int arg2;
+
+	plus(int x, int y)
+	{
+		arg1 = x;
+		arg2 = y;
+	}
+
+	//overload type conversion operator
+	operator int () const
+	{
+		return arg1 + arg2;
+	}
+
+	operator string () const
+	{
+		return std::to_string(arg1 + arg2);
+	}
+};
+
+int main()
+{
+	int i = plus(1, 2);
+
+	string s = plus(1, 2);
+
+	std::cout <<i<<" -- "<<s<<std::endl;
+
+	return EXIT_SUCCESS;
+}
+```
+
+== Print Array Help
+
+=== print array
+
+```cpp
+template <typename T, size_t N>
+void print(T(&array)[N])
+{
+    for (auto e: array) {
+        std::cout <<e<<"\t";
+    }
+    std::cout <<"\n";
+}
+
+template <typename It>
+void print(It beg, It end)
+{
+    for (;beg < end;++ beg) {
+        std::cout <<*beg<<"\t";
+    }
+    std::cout <<"\n";
+}
+```
+
+== Get User Input
+
+=== get
+
+```cpp
+template <typename T>
+T get()
+{
+    T in;
+
+    do {
+        if (!(std::cin >>in)) {
+            std::cin.clear(), std::cin.ignore();
+        } else {
+            break;
+        }
+    }while(true);
+
+    return in;
+}
+```
+
+== Property
+
+`c{plus}+` 没有 **属性** 这一设施，不过 `Imperfect c{plus}+` 中的讲解了如何使用 `c{plus}+` 的模板来实现属性
+
+=== ReadOnly Property
+
+```cpp
+// 这是一个不可移植的语法，不过常用编译器都支持
+#define SET_TEMPLATE_ARG_AS_FRINED(c)  \
+    fri##end c
+
+template <typename V, typename R, typename F>
+class ReadOnlyProperty
+{
+public:
+    typedef V value_type;
+    typedef R reference_type;
+    typedef F friend_type;
+    typedef ReadOnlyProperty<value_type,    \
+        reference_type, friend_type> class_type;
+private:
+    ReadOnlyProperty()
+    {}
+
+    ReadOnlyProperty(const value_type& r)
+        :m_value(r)
+    {}
+
+    SET_TEMPLATE_ARG_AS_FRINED(friend_type);
+
+public:
+    operator reference_type () const
+    {
+        return m_value;
+    }
+
+private:
+    value_type m_value;
+
+private:
+    ReadOnlyProperty(const ReadOnlyProperty &r) = delete; //c++11
+    ReadOnlyProperty& operator = (const ReadOnlyProperty&) = delete;
+};
+```
+
+=== ReadOnly External Property
+
+```cpp
+template <typename V, typename R>
+class ReadOnlyExternalProperty
+{
+public:
+    typedef V value_type;
+    typedef R reference_type;
+    typedef ReadOnlyExternalProperty<value_type,    \
+        reference_type> class_type;
+public:
+    ReadOnlyExternalProperty(value_type& vref)
+        :m_vref(vref)
+    {}
+
+    operator reference_type() const
+    {
+        return m_vref;
+    }
+
+private:
+
+    value_type& m_vref;
+private:
+    ReadOnlyExternalProperty(const ReadOnlyExternalProperty&) = delete;
+    ReadOnlyExternalProperty& operator = (const ReadOnlyExternalProperty&) = delete;
+};
+```
+
+=== sample
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class LinkList {
+public:
+    ReadOnlyProperty<int, int, LinkList> Count;
+    ReadOnlyExternalProperty<size_t, size_t> Length;
+
+public:
+    LinkList()
+        :Count(0)
+        ,Length(m_length)
+        ,m_length(0)
+    {}
+
+    void add()
+    {
+        Count.m_value ++;
+        m_length ++;
+    }
+
+    void del()
+    {
+        Count.m_value --;
+        m_length --;
+    }
+private:
+    size_t m_length;
+};
+
+int main()
+{
+    LinkList list;
+
+    cout <<"create a list with count -> "<<list.Count<<endl;
+    cout <<"create a list with length -> "<<list.Length<<endl;
+
+    list.add();
+    cout <<"after add -> "<<list.Count<<endl;
+    cout <<"after add -> "<<list.Length<<endl;
+
+    list.del();
+    cout <<"after del -> "<<list.Count<<endl;
+    cout <<"after add -> "<<list.Length<<endl;
+
+    return 0;
+}
+```
+
+== Scoping
+
+这也是来自 `Imperfect c{plus}+` 中的例子，作用域守卫可以在很多情况下帮助你写出优美的代码
+
+=== Increment Scoping
+
+```cpp
+template <typename T>
+struct SimpleIncrementer
+{
+    void operator ()(T& t)
+    {
+        ++t;
+    }
+};
+
+template <typename T>
+struct SimpleDecrementer
+{
+    void operator ()(T& t)
+    {
+        --t;
+    }
+};
+
+template <typename T,
+          typename F = SimpleIncrementer<T>,
+          typename S = SimpleDecrementer<T>>
+class IncrementScoping
+{
+public:
+    typedef T value_type;
+    typedef F first_op;
+    typedef S second_op;
+
+    explicit IncrementScoping(value_type& ref)
+        :m_ref(ref)
+    {
+        first_op()(m_ref);
+    }
+
+    ~IncrementScoping()
+    {
+        second_op()(m_ref);
+    }
+
+private:
+    value_type& m_ref;
+};
+```
+
+=== Value Change Scoping
+
+```cpp
+template <typename T>
+class ValueScoping
+{
+public:
+    typedef T value_type;
+
+    template <typename O>
+    ValueScoping(value_type& var, const O& set)
+        :m_ref(var)
+        ,m_restore(var)
+    {
+        m_ref = set;
+    }
+
+    template <typename O>
+    ValueScoping(value_type& var, const O& set, const value_type& restore)
+        :m_ref(var)
+        ,m_restore(restore)
+    {
+        m_ref = set;
+    }
+
+    ~ValueScoping()
+    {
+        m_ref = m_restore;
+    }
+
+private:
+    value_type&     m_ref;
+    value_type      m_restore;
+};
+```
+
+=== Lock Scoping
+
+```cpp
+template <typename L>
+struct LockHelper
+{
+    static void lock(L& l)
+    {
+        //add this inline *real_lock* function to your class header
+        real_lock(l);
+    }
+
+    static void unlock(L& l)
+    {
+        //add this inline *real_unlock* function to your class header
+        real_unlock(l);
+    }
+};
+
+template <typename L,
+          typename H = LockHelper<L>>
+class LockScoping
+{
+public:
+    explicit LockScoping(L& lock)
+        :m_lock(lock)
+    {
+        H::lock(m_lock);
+    }
+
+    ~LockScoping()
+    {
+        H::unlock(m_lock);
+    }
+
+private:
+    L& m_lock;
+};
+```
+
+=== sample
+
+```cpp
+#include <string>
+#include <iostream>
+
+int main()
+{
+		{
+            int var1 = 0;
+
+            std::cout <<"Before .. value = "<<var1<<std::endl;
+            {
+                IncrementScoping<int> int_scope(var1);
+
+                std::cout <<"Current value = "<<var1<<std::endl;
+            }
+
+            std::cout <<"After .. value = "<<var1<<std::endl;
+        }
+
+        {
+            std::string original_str = "Original";
+
+            std::cout <<"Before .. original_str = "<<original_str<<std::endl;
+            {
+                ValueScoping<std::string> str_scope(original_str, "Temp Value");
+
+                std::cout <<"Current original_str = "<<original_str<<std::endl;
+            }
+
+            std::cout <<"After .. original_str = "<<original_str<<std::endl;
+        }
+
+    	return 0;
+}
+```

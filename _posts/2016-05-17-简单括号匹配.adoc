@@ -1,0 +1,313 @@
+= 简单括号匹配
+:toc-title: contents
+:showtitle:
+:page-navtitle: 简单括号匹配
+:page-excerpt: 这是一道来自ACM的简单算法题目，题目要求检测`[]()`两种括号的匹配情况，题目大致是这样的
+:page-root: ../../../
+
+这是一道来自ACM的简单算法题目，题目要求检测`[]()`两种括号的匹配情况，题目大致是这样的（从网上找的）：
+
+>输入
+    第一行输入一个数N（0<N<=100）,表示有N组测试数据。后面的N行输入多组输入数据，每组输入数据都是一个字符串S(S的长度小于10000，且S不是空串），测试数据组数少于5组。数据保证S中只含有"[","]","(",")"四种字符
+输出
+    每组输入数据的输出占一行，如果该字符串中所含的括号是配对的，则输出Yes,如果不配对则输出No
+样例输入
+>    3
+    [(])
+    (])
+    ([[]()])
+
+>样例输出
+>    No
+    No
+    Yes
+
+== c++
+
+使用c++，看到这种成对的匹配括号，首先想到的肯定是栈，使用栈可以在`O(n)`的时间内匹配出结果。
+
+=== stack
+
+```cpp
+#include <iostream>	//for cin cout
+#include <stack>	// for stack
+#include <string>	// for string
+
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
+using std::stack;
+
+bool checkBracket(const string& str)
+{
+    /*
+     *  '[' -> 91 ']' -> 93
+     *  '(' -> 40 ')' -> 41
+    */
+    string::const_iterator cit = str.begin();
+    string::const_iterator end = str.end();
+
+    stack<char> brackets;
+
+    // traverse user input string 遍历用户输入的字符串
+    for (;cit != end;cit ++) {
+        //if *cit is [ or ( 如果字符是 [ 或者 ( 即入栈
+        if (brackets.empty() || *cit == 91 || *cit == 40) {
+            brackets.push(*cit);
+        } else { // 如果是其它字符，取出栈顶的字符与当前字符比较
+            char & ch = brackets.top();
+
+            // match bracket 匹配后则将栈顶的字符pop掉，否则失败
+            if ((*cit == 93 && ch == 91) || (*cit == 41 && ch == 40)) {
+                brackets.pop();
+            } else {
+                return false;
+            }
+        }
+    }
+ 	//栈为空的时候 匹配成功
+    return brackets.empty();
+}
+
+int main()
+{
+/*
+	程序首先接受一个整数n的输入
+    然后读取n个字符串并返回匹配结果
+*/
+    size_t count = 0;
+
+    do {
+        if (!(cin >>count)) {
+            cin.clear(), cin.ignore();
+        } else {
+            break;
+        }
+    } while (true);
+
+    string str;
+    for (size_t i = 0;i < count;i ++) {
+        cin >>str;
+        if (checkBracket(str)) {
+            cout <<"Yes\n";
+        } else {
+            cout <<"No\n";
+        }
+    }
+
+    return 0;
+}
+```
+
+==== compile
+
+编译使用的是gcc
+```shell
+g++ -Wall -Wextra -std=c++11 bracket-match.cpp
+```
+
+==== input && output
+
+下面是测试以及输出
+```
+5
+()()()[][][]
+Yes
+((()))[[[]]]
+Yes
+(([])[]((()))[[]])
+Yes
+((())))
+No
+((]]
+No
+```
+
+== Perl 6
+
+使用 Perl 6来实现，首先第一个解法还是使用栈匹配的。
+
+=== stack
+
+```perl6
+#!/usr/bin/env perl6
+# 上面是 Perl 6的shebang
+
+# $*IN是 Perl 6的标准输入，我们可以用它获取用户的输入
+my \stdin = $*IN;
+
+# 获取样例个数
+my $count = +stdin.get();
+
+# 配对表
+my %table = 93 => 91, 41 => 40;
+
+# 左括号
+my @list = (91, 40);
+
+# for 循环进行 $count 次，即从 0 ~ $count - 1
+for ^$count {
+    # 获取一行输入
+    my $str = ~stdin.get();
+
+	## use ASCII encoding Str before match bracket
+    my @chars = $str.encode('ASCII')[0 .. * - 1];
+
+    my @stack;
+
+    # str只有编码之后才可以遍历，我们使用for遍历整个str的字符
+    for @chars -> $ch {
+        # 栈为空，并且当前字符在@list里面
+        # (elem) 用于判断，是一个集合运算，相当与∈，更多东西可以参见官方文档，或者
+        # 我的翻译（未来会有）
+		if @stack ~~ 0 || ($ch (elem) @list) {
+			@stack.push: $ch;
+		} else {
+            # 匹配到成对括号，栈顶出栈
+			if @stack[* - 1] == %table{$ch} {
+			    @stack.pop();
+			} else {
+			    say "No";
+			    exit;
+			}
+		}
+    }
+
+    # 当栈为空是说明匹配成功
+    say @stack ~~ 0 ?? "Yes" !! "No";
+}
+```
+
+==== input && output
+
+下面是测试输入以及输出。
+
+```
+5
+()()()[][][]
+Yes
+((()))[[[]]]
+Yes
+(([])[]((()))[[]])
+Yes
+((())))
+No
+((]]
+No
+```
+
+=== use regex substitue match bracket
+
+Perl 5的正则是出了名的强大，Perl 6也不例外，下面使用普通的正则去掉成对的括号，
+如果最后字符串为空，那么字符串便是符合要求的。
+
+```perl6
+#!/usr/bin/env perl6
+
+use v6;
+
+my \stdin = $*IN;
+
+my Int $count = +stdin.get();
+
+for ^$count {
+    my Str $str = stdin.get();
+
+ 	## 利用正则替换掉 [] ()
+    # s/// 即 Perl 6里面的正则替换，
+    # || 是 Perl 6中的 折一 运算，这意味着要匹配到 [] 或者 () 中的一种
+    # + 即是匹配一个或者以上，然后全部替换为空
+    last unless $str ~~ s:g/[ \[ \] || \( \) ]+//;
+
+    say $str.chars ?? "No" !! "Yes";
+}
+```
+
+==== input && output
+
+下面是测试以及输出。
+```
+5
+()()()[][][]
+Yes
+((()))[[[]]]
+Yes
+(([])[]((()))[[]])
+Yes
+((())))
+No
+((]]
+No
+```
+
+=== grammar
+
+Perl 6除了提供了正则表达时，还提供了更强大的正则结构 grammar，
+它适合用来匹配那种固定的格式，比如json、ini等具有一定格式的文件内容。
+
+```perl6
+#!/usr/bin/env perl6
+
+# Perl 6中的异常，跟其他语言差不多
+class X::BrakcetNotMatch is Exception { }
+
+# grammar 的声明，和class的声明格式很像
+grammar Bracket {
+    rule TOP { # 一个 grammar 一定要有一个 TOP rule
+        <pair>*
+    }
+    token pair { # pair的定义是递归式的
+        <bl><br> |
+        <bl><pair>+<br>
+        <?{
+            # token 可以附带语句，进行一些必要的处理
+            state %table = '(' => ')', '[' => ']';
+
+            # 这里用来检测匹配到字符以及括号的匹配结果
+            X::BrakcetNotMatch.new().throw unless %table{$<bl>}:exists;
+            X::BrakcetNotMatch.new().throw unless %table{$<bl>} eq $<br>;
+        }>
+    }
+    token bl { # 用来匹配左括号中的一个
+        <[ \( \[ ]>
+    }
+    token br { # 用来匹配右括号中的一个
+        <[ \) \] ]>
+    }
+}
+
+# 这里直接用 例子来测试，没有输入输出
+my @sample = [
+    "()[]",
+    "(())[[]]",
+    "([][()])",
+    "((())",
+    "((]]",
+];
+
+for @sample -> $sample {
+    try {
+        # 匹配成功，语句会执行到"Yes"，否则抛出异常
+        Bracket.parse($sample);
+        say "Yes";
+        CATCH { # CATCH 是 Perl 6中的异常处理语句块
+            when X::BrakcetNotMatch {
+                say "No";
+            }
+        }
+    }
+}
+```
+
+==== output
+
+上面脚本的输出
+
+```
+Yes
+Yes
+Yes
+Yes
+No
+```

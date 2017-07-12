@@ -1,0 +1,306 @@
+= emacs config
+:toc-title: contents
+:showtitle:
+:page-navtitle: emacs config
+:page-root: ../../../
+
+我的Emacs的配置，主要使用c/c++/perl6三种mode，对于c/c++可以自动补全
+
+    ALT+X irony-install-server RETALT+X jedi:install-server RET
+
+[source,lisp]
+-------------------
+;;load-path
+
+;; add package
+(require 'package) ;; You might already have this line
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
+
+(defvar package-list)
+(setq package-list '(async auctex auto-complete autopair clang-format cmake-ide
+                           cmake-mode company company-irony perl6-mode
+                           company-irony-c-headers dash epl rust-mode company-rtags
+                           google-c-style hungry-delete irony electric pos-tip
+                           let-alist levenshtein magit markdown-mode adoc-mode
+                           popup rtags seq solarized-theme vlf pkg-info
+                           window-numbering writegood-mode yasnippet))
+;; fetch the list of packages available
+(unless package-archive-contents
+  (package-refresh-contents))
+;; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup theme
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;color theme setting[if you need this]
+;(add-to-list 'load-path "~/.emacs.d/color-theme")
+;      (require 'color-theme)
+;      (color-theme-initialize)
+
+;;Emacs24 self theme
+(load-theme 'light-blue t)
+
+;;font face
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Microsoft YaHei Mono" :foundry "MS  " :slant normal :weight normal :height 151 :width normal)))))
+
+;;show time
+(display-time)
+
+;;show line-number
+(column-number-mode t)
+(show-paren-mode t)
+(global-linum-mode t)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup C/C++
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;about tab width
+(setq tab-width 4
+    standard-indent 4
+    default-tab-width 4
+    tab-stop-list '(4 8 12 16 20 24 28 32 36 40
+        44 48 52 56 60 64 68 72 76 80 84 88 92 96)
+    c-basic-offset 4
+)
+
+;;
+(setq indent-tabs-mode t)
+
+;; clipboard
+(setq x-select-enable-clipboard t)
+
+;;cursor-type set to |
+(setq-default cursor-type 'bar)
+
+;;remove scroll bar
+(set-scroll-bar-mode nil)
+(tool-bar-mode -1)
+
+;;auto-complete
+;;(require 'auto-complete-config)
+;;(add-to-list 'ac-dictionary-directories "~/.emacs.d/auto-complete/dict")
+;;(ac-config-default)
+
+;;pos-tip
+(require 'pos-tip)
+(setq ac-quick-help-prefer-pos-tip t)
+
+;;yasnippet
+
+;;electric
+(require 'electric)
+(electric-indent-mode t)
+(electric-pair-mode t)
+;(electric-layout-mode t)
+
+;; clang-format can be triggered using C-M-tab
+(require 'clang-format)
+;;(global-set-key [C-M-tab] 'clang-format-region)
+;; Create clang-format file using google style
+;; clang-format -style=google -dump-config > .clang-format
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Set up code completion with company and irony
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'company)
+(require 'company-rtags)
+(global-company-mode)
+
+;; Enable semantics mode for auto-completion
+(require 'cc-mode)
+(require 'semantic)
+(global-semanticdb-minor-mode 1)
+(global-semantic-idle-scheduler-mode 1)
+(semantic-mode 1)
+
+;; Setup irony-mode to load in c-modes
+(require 'irony)
+(require 'company-irony-c-headers)
+(require 'cl)
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'objc-mode-hook 'irony-mode)
+(setq irony-additional-clang-options '("-std=c++11"))
+
+;; irony-mode hook that is called when irony is triggered
+(defun my-irony-mode-hook ()
+  "Custom irony mode hook to remap keys."
+  (define-key irony-mode-map [remap completion-at-point]
+    'irony-completion-at-point-async)
+  (define-key irony-mode-map [remap complete-symbol]
+    'irony-completion-at-point-async))
+
+(add-hook 'irony-mode-hook 'my-irony-mode-hook)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+;; company-irony setup, c-header completions
+(add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+;; Remove company-semantic because it has higher precedance than company-clang
+;; Using RTags completion is also faster than semantic, it seems. Semantic
+;; also provides a bunch of technically irrelevant completions sometimes.
+;; All in all, RTags just seems to do a better job.
+(setq company-backends (delete 'company-semantic company-backends))
+;; Enable company-irony and several other useful auto-completion modes
+;; We don't use rtags since we've found that for large projects this can cause
+;; async timeouts. company-semantic (after company-clang!) works quite well
+;; but some knowledge some knowledge of when best to trigger is still necessary.
+(eval-after-load 'company
+  '(add-to-list
+    'company-backends '(company-irony-c-headers
+                        company-irony company-yasnippet
+                        company-clang company-rtags)
+    )
+  )
+
+(defun my-disable-semantic ()
+  "Disable the company-semantic backend."
+  (interactive)
+  (setq company-backends (delete '(company-irony-c-headers
+                                   company-irony company-yasnippet
+                                   company-clang company-rtags
+                                   company-semantic) company-backends))
+  (add-to-list
+   'company-backends '(company-irony-c-headers
+                       company-irony company-yasnippet
+                       company-clang company-rtags))
+  )
+(defun my-enable-semantic ()
+  "Enable the company-semantic backend."
+  (interactive)
+  (setq company-backends (delete '(company-irony-c-headers
+                                   company-irony company-yasnippet
+                                   company-clang) company-backends))
+  (add-to-list
+   'company-backends '(company-irony-c-headers
+                       company-irony company-yasnippet company-clang))
+  )
+
+;; Zero delay when pressing tab
+(setq company-idle-delay 0)
+(define-key c-mode-map [(tab)] 'company-complete)
+(define-key c++-mode-map [(tab)] 'company-complete)
+;; Delay when idle because I want to be able to think
+(setq company-idle-delay 0.2)
+
+;; Prohibit semantic from searching through system headers. We want
+;; company-clang to do that for us.
+(setq-mode-local c-mode semanticdb-find-default-throttle
+                 '(local project unloaded recursive))
+(setq-mode-local c++-mode semanticdb-find-default-throttle
+                 '(local project unloaded recursive))
+
+(semantic-remove-system-include "/usr/include/" 'c++-mode)
+(semantic-remove-system-include "/usr/local/include/" 'c++-mode)
+(add-hook 'semantic-init-hooks
+          'semantic-reset-system-include)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup perl6
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;perl6-mode
+(require 'perl6-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup python
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; add elpy repo
+(require 'package)
+(add-to-list 'package-archives '("elpy"  . "http://jorgenschaefer.github.io/packages/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+
+;; init elpy
+(package-initialize)
+(elpy-enable)
+
+;; jedi config
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)
+
+;; config elpy
+(setq elpy-rpc-python-command "python3")
+
+
+;; Load rtags and start the cmake-ide-setup process
+(require 'rtags)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup cmake-ide
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'cmake-ide)
+(cmake-ide-setup)
+;; Set cmake-ide-flags-c++ to use C++11
+(setq cmake-ide-flags-c++ (append '("-std=c++11")))
+;; We want to be able to compile with a keyboard shortcut
+(global-set-key (kbd "C-c m") 'cmake-ide-compile)
+
+;; Set rtags to enable completions and use the standard keybindings.
+;; A list of the keybindings can be found at:
+;; http://syamajala.github.io/c-ide.html
+(setq rtags-autostart-diagnostics t)
+(rtags-diagnostics)
+(setq rtags-completions-enabled t)
+(rtags-enable-standard-keybindings)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Others
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RET indent for lisp and other
+(defun set-newline-and-indent()
+  (local-set-key (kbd "RET") 'newline-and-indent))
+(add-hook 'lisp-mode-hook 'set-newline-and-indent)
+(define-key global-map (kbd "RET") 'newline-and-indent)
+
+;;show pair
+(show-paren-mode t)
+(setq show-paren-style 'parentheses)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(custom-safe-themes
+   (quote
+    ("a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "a0feb1322de9e26a4d209d1cfa236deaf64662bb604fa513cca6a057ddf0ef64" "7356632cebc6a11a87bc5fcffaa49bae528026a78637acd03cae57c091afd9b9" "04dd0236a367865e591927a3810f178e8d33c372ad5bfef48b5ce90d4b476481" default)))
+ '(display-time-mode t)
+ '(package-selected-packages (quote (irony kotlin-mode rust-mode jedi-direx jedi elpy)))
+ '(show-paren-mode t)
+ '(tool-bar-mode nil))
+
+(put 'scroll-left 'disabled t)
+
+;;auto backup
+(setq
+    backup-by-copying t
+    backup-directory-alist
+    '(("." . "~/.emacs.d/backups"))
+    delete-old-version t
+    kept-new-versions 3
+    kept-old-versions 1
+    version-control t)
+
+;;C-x C-u
+(put 'upcase-region 'disabled nil)
+-------------------
