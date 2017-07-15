@@ -1,0 +1,89 @@
+= 插件生命周期
+:toc-title: contents
+:showtitle:
+:page-navtitle: 插件生命周期（QtCreator文档翻译）
+:page-excerpt: 为了不编写 `QtCreator` 插件，你必须清楚在你启动或者关闭 `QtCreator` 的时候，插件管理器所做的事情。
+:page-root: ../../../
+
+为了不编写 `QtCreator` 插件，你必须清楚在你启动或者关闭 `QtCreator` 的时候，插件管理器
+所做的事情。
+这一小节详细描述了这个过程以及插件将要经历的状态。
+
+在启动 `QtCreator` 时，通过设置环境变量 `QT_LOGGING_RULES` 的值为 `qtc.extensionsystem*=true`
+开启插件相关的调试日志输出，你可以获得更多的信息。
+
+当你启动 `QtCreator` 时，插件管理器做了以下事情：
+
+. 在它的搜索路径内查找所有的动态库，然后读取它们的元数据。
+所有不包含元数据或者没有 **org.qt-project.Qt.QtCreatorPlugin** `IID`
+的动态库将会被忽略。这是糟糕的原始数据可能会导致插件加载失败的第一点。
+
+. 为某一个插件创建一个 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginspec.html[ExtensionSystem::PluginSpec] 的实例，该类是
+插件规范中所有信息的容器，并且还追踪插件的状态。
+你可以通过调用函数 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginmanager.html#plugins[plugins()] 获取 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginspec.html[ExtensionSystem::PluginSpec]
+的实例，或者在插件加载过后，通过插件的 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#pluginSpec[pluginSpec] 函数获得。
+
+. 设置插件为 **读取** 状态。
+
+. 验证每个插件的依赖是否存在并且兼容。想了解更多插件依赖的信息，
+请参考 `Plugin Specifications`。
+
+. 设置插件为 **解决**（**Resolved**）状态。
+
+. 把排序好的插件放进一个列表中，我们叫它 __load queue__，插件的依赖
+防止的插件的后面（但不是必须直接跟在插件的后面）。这能确保我们以适当的
+顺序加载并初始化所有插件。
+
+. 加载插件的动态库，然后以 __load queue__ 中的顺序创建 `IPlugin` 的实例。
+这时候，插件的构造函数将会被调用，被其他插件依赖的插件将会优先创建。
+
+. 设置插件为 **加载** 状态。
+
+. 以 __load queue__ 中的顺序调用所有的插件的 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#initialize[initialize()] 函数。在
+**initialize** 函数中，插件必须保证所有导出的接口已设置，并且对于在其它插件中可用。
+一个插件可以假定它所依赖的其他插件的导出接口已经被设置完成。
+比如，**Core** 插件设置了 https://doc-snapshots.qt.io/qtcreator-extending/core-actionmanager.html[Core::ActionManager]、https://doc-snapshots.qt.io/qtcreator-extending/core-editormanager.html[Core::EditorManager]以及
+其他的可用的公共接口，则其他的插件都可以请求并使用它们。
++
+插件的 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#initialize[initialize()] 函数适合
++
+    * 向插件管理器对象池中注册对象（参考 https://doc-snapshots.qt.io/qtcreator-extending/pluginmanager.html[The Plugin Manger, the Object Pool, and Registered Objects]）
+    * 加载设置
+    * 增加新的菜单，以及向菜单中添加动作
+    * 连接到其他插件的信号
+
+. 设置插件为 **初始化** 的状态。
+
+. 以 __load queue__ 中的反向顺序调用所有插件的 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#extensionsInitialized[extensionInitialized()] 函数，
+在调用 **extensionInitialized** 函数之后，插件应该完全初始化、设置并且运行。
+一个插件可以假定它所依赖的其他插件都被设置完成，并且完成可以被其他插件扩展
+部分的初始化。
+比如，**Core** 插件将假定所有插件已经注册完它们的动作，并且完成动作管理器的初始化。
+
+. 设置插件为运行状态。
+
+在启动的最后，插件 **Core** 的 https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html[Core::ICore] 会发送两个信号。
+在 **QtCreator** 的 **UI** 显示出来之前发送 https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html#coreAboutToOpen[coreAboutToOpen()]，
+之后发送 https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html#coreOpened[coreOpened()]。
+
+在启动后，当 **QtCreator** 的事件循环运行时，插件管理器会以 __load queue__ 的反向顺序调用
+所有插件的 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#delayedInitialize[delayedInitialized()] 函数。
+这些调用会在主线程完成，但是会拆分出几毫秒的时间片来确保 **QtCreator** 的响应。
+在 **deployedInitialized** 函数内，插件可以执行非关键的初始化，如果在启动阶段完成，
+可能会不必要的延迟 **QtCreator** 的显示。
+
+在所有延迟初始化完成后，https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginmanager.html[插件管理器] 会发送信号 initializedDone()。
+
+在关闭之前，插件 **Core** 的 https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html[Core::ICore] 会发送信号 https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html#coreAboutToClose[coreAboutToClose()]。
+之后，插件管理器会启动它的关闭程序：
+
+. 以 __load queue__ 中的顺序调用每个插件的 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#aboutToShutdown[aboutToShutdown()] 函数，插件需要执行
+加速实际关闭的措施，比如断开可能会调用的信号链接。如果一个插件需要延迟真正的关闭一会，
+比如为了完整的退出，需要等待额外的进程结束，插件可以通过函数 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#ShutdownFlag-enum[Extension::IPlugin::AsynchronousShutdown]
+返回。这将会使插件管理器在下一步等待，并保持主事件循环的运行，直到所插件发送 **asynchronousShutdownFinished()**
+信号请求 **AsynchronousShutdown**。
+
+. 以 __load queue__ 中的反向顺序删除 https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html[ExtensionSystem::IPlugin] 实例销毁所有的插件。
+在这时候插件的析构函数被调用，插件应该通过释放内存或者其他资源自己清理。
+
+https://doc-snapshots.qt.io/qtcreator-extending/plugin-lifecycle.html[原文地址]
