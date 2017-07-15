@@ -2,10 +2,10 @@
 :toc-title: contents
 :showtitle:
 :page-navtitle: 插件生命周期（QtCreator文档翻译）
-:page-excerpt: 为了不编写 `QtCreator` 插件，你必须清楚在你启动或者关闭 `QtCreator` 的时候，插件管理器所做的事情。
+:page-excerpt: 为了编写 `QtCreator` 插件，你必须清楚在你启动或者关闭 `QtCreator` 的时候，插件管理器所做的事情。
 :page-root: ../../../
 
-为了不编写 `QtCreator` 插件，你必须清楚在你启动或者关闭 `QtCreator` 的时候，插件管理器
+为了编写 `QtCreator` 插件，你必须清楚在你启动或者关闭 `QtCreator` 的时候，插件管理器
 所做的事情。
 这一小节详细描述了这个过程以及插件将要经历的状态。
 
