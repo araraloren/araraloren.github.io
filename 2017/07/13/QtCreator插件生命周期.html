@@ -1,0 +1,245 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插件生命周期</title>
+    <meta name="description" content="C/C++/Perl6 Blog">
+    <meta name="author" content="Your name goes here">
+    <meta name="copyright" content="Maybe consider a Creative Commons license">
+    <link rel="stylesheet" href="../../../css/foundation.css">
+    <link rel="stylesheet" href="../../../css/font-awesome.css">
+    <link rel="stylesheet" href="../../../css/coderay.css">
+    <link rel="stylesheet" href="../../../css/asciidoctor.css">
+    <script src="../../../js/vendor/modernizr.js"></script>
+    <script src="../../../js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="../../../">Loren Blog</a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+        <ul>
+            <h1>插件生命周期</h1>
+<div class="paragraph">
+<p>为了不编写 <code>QtCreator</code> 插件，你必须清楚在你启动或者关闭 <code>QtCreator</code> 的时候，插件管理器
+所做的事情。
+这一小节详细描述了这个过程以及插件将要经历的状态。</p>
+</div>
+<div class="paragraph">
+<p>在启动 <code>QtCreator</code> 时，通过设置环境变量 <code>QT_LOGGING_RULES</code> 的值为 <code>qtc.extensionsystem*=true</code>
+开启插件相关的调试日志输出，你可以获得更多的信息。</p>
+</div>
+<div class="paragraph">
+<p>当你启动 <code>QtCreator</code> 时，插件管理器做了以下事情：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>在它的搜索路径内查找所有的动态库，然后读取它们的元数据。
+所有不包含元数据或者没有 <strong>org.qt-project.Qt.QtCreatorPlugin</strong> <code>IID</code>
+的动态库将会被忽略。这是糟糕的原始数据可能会导致插件加载失败的第一点。</p>
+</li>
+<li>
+<p>为某一个插件创建一个 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginspec.html">ExtensionSystem::PluginSpec</a> 的实例，该类是
+插件规范中所有信息的容器，并且还追踪插件的状态。
+你可以通过调用函数 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginmanager.html#plugins">plugins()</a> 获取 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginspec.html">ExtensionSystem::PluginSpec</a>
+的实例，或者在插件加载过后，通过插件的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#pluginSpec">pluginSpec</a> 函数获得。</p>
+</li>
+<li>
+<p>设置插件为 <strong>读取</strong> 状态。</p>
+</li>
+<li>
+<p>验证每个插件的依赖是否存在并且兼容。想了解更多插件依赖的信息，
+请参考 <code>Plugin Specifications</code>。</p>
+</li>
+<li>
+<p>设置插件为 <strong>解决</strong>（<strong>Resolved</strong>）状态。</p>
+</li>
+<li>
+<p>把排序好的插件放进一个列表中，我们叫它 <em>load queue</em>，插件的依赖
+防止的插件的后面（但不是必须直接跟在插件的后面）。这能确保我们以适当的
+顺序加载并初始化所有插件。</p>
+</li>
+<li>
+<p>加载插件的动态库，然后以 <em>load queue</em> 中的顺序创建 <code>IPlugin</code> 的实例。
+这时候，插件的构造函数将会被调用，被其他插件依赖的插件将会优先创建。</p>
+</li>
+<li>
+<p>设置插件为 <strong>加载</strong> 状态。</p>
+</li>
+<li>
+<p>以 <em>load queue</em> 中的顺序调用所有的插件的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#initialize">initialize()</a> 函数。在
+<strong>initialize</strong> 函数中，插件必须保证所有导出的接口已设置，并且对于在其它插件中可用。
+一个插件可以假定它所依赖的其他插件的导出接口已经被设置完成。
+比如，<strong>Core</strong> 插件设置了 <a href="https://doc-snapshots.qt.io/qtcreator-extending/core-actionmanager.html">Core::ActionManager</a>、https://doc-snapshots.qt.io/qtcreator-extending/core-editormanager.html[Core::EditorManager]以及
+其他的可用的公共接口，则其他的插件都可以请求并使用它们。</p>
+<div class="paragraph">
+<p>插件的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#initialize">initialize()</a> 函数适合</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>向插件管理器对象池中注册对象（参考 <a href="https://doc-snapshots.qt.io/qtcreator-extending/pluginmanager.html">The Plugin Manger, the Object Pool, and Registered Objects</a>）</p>
+</li>
+<li>
+<p>加载设置</p>
+</li>
+<li>
+<p>增加新的菜单，以及向菜单中添加动作</p>
+</li>
+<li>
+<p>连接到其他插件的信号</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>设置插件为 <strong>初始化</strong> 的状态。</p>
+</li>
+<li>
+<p>以 <em>load queue</em> 中的反向顺序调用所有插件的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#extensionsInitialized">extensionInitialized()</a> 函数，
+在调用 <strong>extensionInitialized</strong> 函数之后，插件应该完全初始化、设置并且运行。
+一个插件可以假定它所依赖的其他插件都被设置完成，并且完成可以被其他插件扩展
+部分的初始化。
+比如，<strong>Core</strong> 插件将假定所有插件已经注册完它们的动作，并且完成动作管理器的初始化。</p>
+</li>
+<li>
+<p>设置插件为运行状态。</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>在启动的最后，插件 <strong>Core</strong> 的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html">Core::ICore</a> 会发送两个信号。
+在 <strong>QtCreator</strong> 的 <strong>UI</strong> 显示出来之前发送 <a href="https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html#coreAboutToOpen">coreAboutToOpen()</a>，
+之后发送 <a href="https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html#coreOpened">coreOpened()</a>。</p>
+</div>
+<div class="paragraph">
+<p>在启动后，当 <strong>QtCreator</strong> 的事件循环运行时，插件管理器会以 <em>load queue</em> 的反向顺序调用
+所有插件的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#delayedInitialize">delayedInitialized()</a> 函数。
+这些调用会在主线程完成，但是会拆分出几毫秒的时间片来确保 <strong>QtCreator</strong> 的响应。
+在 <strong>deployedInitialized</strong> 函数内，插件可以执行非关键的初始化，如果在启动阶段完成，
+可能会不必要的延迟 <strong>QtCreator</strong> 的显示。</p>
+</div>
+<div class="paragraph">
+<p>在所有延迟初始化完成后，https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-pluginmanager.html[插件管理器] 会发送信号 initializedDone()。</p>
+</div>
+<div class="paragraph">
+<p>在关闭之前，插件 <strong>Core</strong> 的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html">Core::ICore</a> 会发送信号 <a href="https://doc-snapshots.qt.io/qtcreator-extending/core-icore.html#coreAboutToClose">coreAboutToClose()</a>。
+之后，插件管理器会启动它的关闭程序：</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>以 <em>load queue</em> 中的顺序调用每个插件的 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#aboutToShutdown">aboutToShutdown()</a> 函数，插件需要执行
+加速实际关闭的措施，比如断开可能会调用的信号链接。如果一个插件需要延迟真正的关闭一会，
+比如为了完整的退出，需要等待额外的进程结束，插件可以通过函数 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html#ShutdownFlag-enum">Extension::IPlugin::AsynchronousShutdown</a>
+返回。这将会使插件管理器在下一步等待，并保持主事件循环的运行，直到所插件发送 <strong>asynchronousShutdownFinished()</strong>
+信号请求 <strong>AsynchronousShutdown</strong>。</p>
+</li>
+<li>
+<p>以 <em>load queue</em> 中的反向顺序删除 <a href="https://doc-snapshots.qt.io/qtcreator-extending/extensionsystem-iplugin.html">ExtensionSystem::IPlugin</a> 实例销毁所有的插件。
+在这时候插件的析构函数被调用，插件应该通过释放内存或者其他资源自己清理。</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><a href="https://doc-snapshots.qt.io/qtcreator-extending/plugin-lifecycle.html">原文地址</a></p>
+</div>
+        </ul>
+    </div>
+
+    <!-- End Main Content -->
+    <!-- Sidebar -->
+    <aside class="large-3 columns">
+
+        <h4>Posts</h4>
+        <ul id="posts" class="posts nav">
+            
+            <li>
+                <a href="/2017/07/13/QtCreator%E6%8F%92%E4%BB%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html">插件生命周期（QtCreator文档翻译）</a>
+            </li>
+            
+            <li>
+                <a href="/2016/11/02/1%E7%9A%84%E8%A1%A5%E7%A0%81%E4%B8%8E2%E7%9A%84%E8%A1%A5%E7%A0%81.html">1的补码与2的补码</a>
+            </li>
+            
+            <li>
+                <a href="/2016/10/05/%E5%BD%92%E7%BA%B3%E6%93%8D%E4%BD%9C%E7%AC%A6.html">归纳操作符（reduce operator）</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/25/emacs-config.html">emacs config</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/25/c++%E6%A8%A1%E6%9D%BF%E7%9A%84%E6%8A%80%E5%B7%A7%E7%A4%BA%E4%BE%8B.html">c++模板的技巧示例</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/17/%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D.html">简单括号匹配</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/15/IA32-%E7%AE%97%E6%9C%AF%E7%A7%BB%E4%BD%8D%E5%92%8C%E9%80%BB%E8%BE%91%E7%A7%BB%E4%BD%8D.html">IA-32算术移位与逻辑移位</a>
+            </li>
+            
+        </ul>
+
+        <div class="panel">
+            <h5>Loren Blog</h5>
+
+            <p>将会写一些关于C/C++/Perl6 的小文章，记录一些知识点。</p>
+        </div>
+
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>© 2017 araraloren</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="../../../js/vendor/jquery.js"></script>
+<script src="../../../js/foundation.min.js"></script>
+<script>
+$(document).foundation();
+var doc = document.documentElement;
+doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>
