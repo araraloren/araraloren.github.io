@@ -1,0 +1,380 @@
+<!doctype html>
+<!--[if IE 9]>
+<html class="lt-ie10" lang="en"> <![endif]-->
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perl6调用C接口</title>
+    <meta name="description" content="C/C++/Perl6 Blog">
+    <meta name="author" content="Your name goes here">
+    <meta name="copyright" content="Maybe consider a Creative Commons license">
+    <link rel="stylesheet" href="../../../css/foundation.css">
+    <link rel="stylesheet" href="../../../css/font-awesome.css">
+    <link rel="stylesheet" href="../../../css/coderay.css">
+    <link rel="stylesheet" href="../../../css/asciidoctor.css">
+    <script src="../../../js/vendor/modernizr.js"></script>
+    <script src="../../../js/toc.js"></script>
+</head>
+<body>
+
+
+<!-- Nav Bar -->
+<nav class="top-bar" data-topbar>
+    <ul class="title-area">
+        <!-- Title Area -->
+        <li class="name">
+            <h1>
+                <a href="../../../">Loren Blog</a>
+            </h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+    </ul>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns" role="content">
+        <ul>
+            <h1>Perl6调用C接口</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>NativeCall</code> 是 <code>Perl6</code> 内置的一个模块，它可以让你不用编写 <code>C</code> 代码就可以轻松完成
+调用现有 <code>C</code> 库接口的任务。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="调用_c_的_rand_函数">调用 C 的 rand 函数</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>C</code> 中的 <code>rand</code> 函数：</p>
+</div>
+<div class="paragraph">
+<p><code>int rand(void);</code></p>
+</div>
+<div class="paragraph">
+<p>它没有参数，返回一个随机的整数。</p>
+</div>
+<div class="paragraph">
+<p>Perl6 的代码是这样子：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre>1
+2
+3
+</pre></td>
+  <td class="code"><pre>use NativeCall;
+sub crand() of int32 is symbol(&quot;rand&quot;) is native(Str) { * }
+say crand();</pre></td>
+</tr></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>第1行告诉 <code>Perl6</code> 我们需要引用模块 <code>NativeCall</code>。</p>
+</div>
+<div class="paragraph">
+<p>然后接下来是一个 <code>sub</code>（我们使用 <code>trait</code> <code>is native</code> 来表明这是一个原生接口） 的声明，
+这告诉 <code>Perl6</code> 我们想要使用的 <code>C</code> 接口的样子。
+在这个例子中就是一个返回值为 <strong>int32</strong>（<code>of int32</code>，
+详见 <a href="https://docs.perl6.org/language/nativecall#Passing_and_Returning_Values">类型对应表</a>），
+参数为 <strong>空</strong>（<code>()</code>，参数表表示了调用 <code>C</code> 接口的参数），
+库 <code>libc</code>（<code>is native(Str)</code>，这里因为 <code>libc</code> 的原因不可以写成 <code>is native('libc')</code>，
+只能留空或者写成 <code>is native('libc.so.6')</code>）中名字为 <strong>rand</strong>（<code>is symbol("rand")</code>，没有此 <code>trait</code> 的时候
+<code>Perl6</code> 会查找跟 <code>sub</code> 名字相同的函数）的 <code>C</code> 函数。</p>
+</div>
+<div class="paragraph">
+<p><code>crand</code> 即我们在 <code>Perl6</code> 可以访问的名字，接着第3行我们调用 <code>say</code> 输出 <code>crand</code> 的返回值。</p>
+</div>
+<div class="paragraph">
+<p>这样一次简单的调用 <code>C</code> 接口的旅程就完成了。
+最主要的几个关键点就是函数的 <strong>名字</strong>、<strong>返回值</strong>、<strong>参数</strong>，以及<strong>库的名字</strong>。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="字符串的传递">字符串的传递</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>字符串作为参数可以使用类型 <code>Str</code> 或者 <code>CArray[uint8]</code> 来完成。</p>
+</div>
+<div class="paragraph">
+<p>比如对于 <code>C</code> 中的函数 <code>puts</code>（<code>int puts(const char* s)</code>） 函数：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre>1
+2
+3
+4
+</pre></td>
+  <td class="code"><pre>use NativeCall;
+sub puts(Str) of int32 is native('libc.so.6') { * }
+my Str $want-display=&quot;Hello, I'm from Perl6&quot;;
+say puts($want-display);</pre></td>
+</tr></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>这里，我们声明了 <code>sub</code> <code>puts</code> 的样子。</p>
+</div>
+<div class="paragraph">
+<p>我们使用 <code>Str</code> 来表示 <code>puts</code> 接受一个字符串参数，
+尾部的 <code>trait</code> <code>is native('libc.so.6')</code> 表明我们的函数存在于 <code>C</code> 库中，这与第一个例子写法有点不同，
+之后我们没有使用 <code>is symbol</code>，<code>Perl6</code> 很聪明，它会自动查找和 <code>sub</code> 名字一样的函数。</p>
+</div>
+<div class="paragraph">
+<p>接下来，我们定义了一个字符串 <code>$want-display</code>，它一共 <strong>22</strong> 个字符。
+调用 <code>puts</code> 输出 <code>$want-display</code>，屏幕将会显示</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>Hello, I'm from Perl6
+22</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>22</strong> 是 <code>puts</code> 的返回值，它返回成功输出的字符个数。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="指针的使用">指针的使用</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="指针作为参数">指针作为参数</h3>
+<div class="sect3">
+<h4 id="使用_code_trait_code_code_is_rw_code">使用 <code>trait</code> <code>is rw</code></h4>
+<div class="paragraph">
+<p><code>C</code> 中的 <code>time</code> 函数：</p>
+</div>
+<div class="paragraph">
+<p><code>time_t time(time_t *tloc);</code></p>
+</div>
+<div class="paragraph">
+<p>一般来说 <code>time_t</code> 就是 <code>long</code>，所以在这里我们使用 <code>long</code> 来演示。
+<code>time</code> 接受一个 <code>time_t</code> 的指针作为参数，返回当前的日历时间的秒数。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre>1
+2
+3
+4
+5
+6
+</pre></td>
+  <td class="code"><pre>use NativeCall;
+sub time(long is rw) of long is native(Str) { * }
+say time(my long $null);
+my long $l .= new;
+say time($l);
+say $l;</pre></td>
+</tr></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>time</code> 的参数我们使用 <code>long is rw</code> 来表示 <code>C</code> 接口的参数是 <code>long</code> 的指针，并且
+我们使用类型对象 <code>$null</code> 来表示 <code>NULL</code>，也可以使用 <code>new</code> 创建 <code>long</code> 类型实例，传递给 <code>time</code> 函数。</p>
+</div>
+<div class="paragraph">
+<p>因为这里执行的时间很短，输出大致像这样：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>1501953598
+1501953598
+1501953598</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="使用_carray">使用 CArray</h4>
+<div class="paragraph">
+<p><code>C</code> 中的 <code>rand_r</code> 函数：</p>
+</div>
+<div class="paragraph">
+<p><code>int rand_r(unsigned int *seedp);</code></p>
+</div>
+<div class="paragraph">
+<p>它接受一个 <code>int*</code> 的参数，并且它会在 <code>seedp</code> 指向的内存里存储随机的状态，即 <code>rand_r</code> 会修改
+参数指向的值，我们需要保证传递的参数的生命周期在函数调用结束后依然有效，在这里我们使用 <code>CArray</code>。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td>
+  <td class="code"><pre>use NativeCall;
+sub rand_r(CArray[uint32]) of int32 is native(Str) { * }
+my @u := CArray[uint32].new;
+@u[0] = 55;
+for ^5 {
+    say &quot;CURRENT =&gt; &quot;, @u[0], &quot; CALL-RET[&quot;, rand_r(@u), &quot;] AFTER =&gt; &quot;, @u[0];
+}</pre></td>
+</tr></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>例子中 <code>rand_r</code> 的参数类型为 <code>CArray[uint32]</code>，<code>CArray</code> 是一个支持类型参数的 <code>role</code>。</p>
+</div>
+<div class="paragraph">
+<p>定义变量 <code>@u</code> 并调用 <code>rand_r</code> 之后输出大约是这样：</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code>CURRENT =&gt; 55 CALL-RET[431173127] AFTER =&gt; 1107800770
+CURRENT =&gt; 1107800770 CALL-RET[480593526] AFTER =&gt; 1182139145
+CURRENT =&gt; 1182139145 CALL-RET[1915167251] AFTER =&gt; 504621372
+CURRENT =&gt; 504621372 CALL-RET[2132881580] AFTER =&gt; 1823219531
+CURRENT =&gt; 1823219531 CALL-RET[1564670800] AFTER =&gt; -1420796954</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="使用_pointer">使用 Pointer</h3>
+
+</div>
+<div class="sect2">
+<h3 id="指针作为对象">指针作为对象</h3>
+
+</div>
+<div class="sect2">
+<h3 id="函数指针">函数指针</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="数组">数组</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="结构">结构</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="函数作为参数">函数作为参数</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="全局变量">全局变量</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="库路径以及名字">库路径以及名字</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="标准库">标准库</h3>
+
+</div>
+</div>
+</div>
+        </ul>
+    </div>
+
+    <!-- End Main Content -->
+    <!-- Sidebar -->
+    <aside class="large-3 columns">
+
+        <h4>Posts</h4>
+        <ul id="posts" class="posts nav">
+            
+            <li>
+                <a href="/2017/08/05/Perl6%E8%B0%83%E7%94%A8C%E6%8E%A5%E5%8F%A3.html">Perl6调用C接口</a>
+            </li>
+            
+            <li>
+                <a href="/2017/07/13/QtCreator%E6%8F%92%E4%BB%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html">插件生命周期（QtCreator文档翻译）</a>
+            </li>
+            
+            <li>
+                <a href="/2016/11/02/1%E7%9A%84%E8%A1%A5%E7%A0%81%E4%B8%8E2%E7%9A%84%E8%A1%A5%E7%A0%81.html">1的补码与2的补码</a>
+            </li>
+            
+            <li>
+                <a href="/2016/10/05/%E5%BD%92%E7%BA%B3%E6%93%8D%E4%BD%9C%E7%AC%A6.html">归纳操作符（reduce operator）</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/25/emacs-config.html">emacs config</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/25/c++%E6%A8%A1%E6%9D%BF%E7%9A%84%E6%8A%80%E5%B7%A7%E7%A4%BA%E4%BE%8B.html">c++模板的技巧示例</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/17/%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D.html">简单括号匹配</a>
+            </li>
+            
+            <li>
+                <a href="/2016/05/15/IA32-%E7%AE%97%E6%9C%AF%E7%A7%BB%E4%BD%8D%E5%92%8C%E9%80%BB%E8%BE%91%E7%A7%BB%E4%BD%8D.html">IA-32算术移位与逻辑移位</a>
+            </li>
+            
+        </ul>
+
+        <div class="panel">
+            <h5>Loren Blog</h5>
+
+            <p>将会写一些关于C/C++/Perl6 的小文章，记录一些知识点。</p>
+        </div>
+
+    </aside>
+
+    <!-- End Sidebar -->
+</div>
+
+<!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+
+<footer class="row">
+    <div class="large-12 columns">
+        <hr>
+        <div class="row">
+            <div class="large-12 columns">
+                <p>
+                    © 2017 araraloren | 
+                    <a href=https://github.com/araraloren> araraloren@github.com </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="../../../js/vendor/jquery.js"></script>
+<script src="../../../js/foundation.min.js"></script>
+<script>
+$(document).foundation();
+var doc = document.documentElement;
+doc.setAttribute('data-useragent', navigator.userAgent);
+</script>
+</body>
+</html>
