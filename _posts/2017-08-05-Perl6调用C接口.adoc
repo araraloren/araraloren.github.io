@@ -1,0 +1,148 @@
+= Perl6调用C接口
+:toc-title: contents
+:showtitle:
+:page-navtitle: Perl6调用C接口
+:page-excerpt: 使用内建支持的 NativeCall，Perl 6 可以轻松的调用 C 接口
+:page-root: ../../../
+:coderay-linenums-mode: table
+
+`NativeCall` 是 `Perl6` 内置的一个模块，它可以让你不用编写 `C` 代码就可以轻松完成
+调用现有 `C` 库接口的任务。
+
+== 调用 C 的 rand 函数
+
+`C` 中的 `rand` 函数：
+
+`int rand(void);`
+
+它没有参数，返回一个随机的整数。
+
+Perl6 的代码是这样子：
+[source,perl6,linenums]
+--------------------
+use NativeCall;
+sub crand() of int32 is symbol("rand") is native(Str) { * }
+say crand();
+--------------------
+第1行告诉 `Perl6` 我们需要引用模块 `NativeCall`。
+
+然后接下来是一个 `sub`（我们使用 `trait` `is native` 来表明这是一个原生接口） 的声明，
+这告诉 `Perl6` 我们想要使用的 `C` 接口的样子。
+在这个例子中就是一个返回值为 **int32**（`of int32`，
+详见 https://docs.perl6.org/language/nativecall#Passing_and_Returning_Values[类型对应表]），
+参数为 **空**（`()`，参数表表示了调用 `C` 接口的参数），
+库 `libc`（`is native(Str)`，这里因为 `libc` 的原因不可以写成 `is native('libc')`，
+只能留空或者写成 `is native('libc.so.6')`）中名字为 **rand**（`is symbol("rand")`，没有此 `trait` 的时候
+`Perl6` 会查找跟 `sub` 名字相同的函数）的 `C` 函数。
+
+`crand` 即我们在 `Perl6` 可以访问的名字，接着第3行我们调用 `say` 输出 `crand` 的返回值。
+
+这样一次简单的调用 `C` 接口的旅程就完成了。
+最主要的几个关键点就是函数的 **名字**、**返回值**、**参数**，以及**库的名字**。
+
+== 字符串的传递
+
+字符串作为参数可以使用类型 `Str` 或者 `CArray[uint8]` 来完成。
+
+比如对于 `C` 中的函数 `puts`（`int puts(const char* s)`） 函数：
+[source,perl6,linenums]
+-----------------------
+use NativeCall;
+sub puts(Str) of int32 is native('libc.so.6') { * }
+my Str $want-display="Hello, I'm from Perl6";
+say puts($want-display);
+-----------------------
+这里，我们声明了 `sub` `puts` 的样子。
+
+我们使用 `Str` 来表示 `puts` 接受一个字符串参数，
+尾部的 `trait` `is native('libc.so.6')` 表明我们的函数存在于 `C` 库中，这与第一个例子写法有点不同，
+之后我们没有使用 `is symbol`，`Perl6` 很聪明，它会自动查找和 `sub` 名字一样的函数。
+
+接下来，我们定义了一个字符串 `$want-display`，它一共 **22** 个字符。
+调用 `puts` 输出 `$want-display`，屏幕将会显示
+[source]
+-----------------------
+Hello, I'm from Perl6
+22
+-----------------------
+**22** 是 `puts` 的返回值，它返回成功输出的字符个数。
+
+== 指针的使用
+
+=== 指针作为参数
+
+==== 使用 `trait` `is rw`
+
+`C` 中的 `time` 函数：
+
+`time_t time(time_t *tloc);`
+
+一般来说 `time_t` 就是 `long`，所以在这里我们使用 `long` 来演示。
+`time` 接受一个 `time_t` 的指针作为参数，返回当前的日历时间的秒数。
+[source,perl6,linenums]
+------------------
+use NativeCall;
+sub time(long is rw) of long is native(Str) { * }
+say time(my long $null);
+my long $l .= new;
+say time($l);
+say $l;
+------------------
+`time` 的参数我们使用 `long is rw` 来表示 `C` 接口的参数是 `long` 的指针，并且
+我们使用类型对象 `$null` 来表示 `NULL`，也可以使用 `new` 创建 `long` 类型实例，传递给 `time` 函数。
+
+因为这里执行的时间很短，输出大致像这样：
+[source]
+--------
+1501953598
+1501953598
+1501953598
+--------
+
+==== 使用 CArray
+
+`C` 中的 `rand_r` 函数：
+
+`int rand_r(unsigned int *seedp);`
+
+它接受一个 `int*` 的参数，并且它会在 `seedp` 指向的内存里存储随机的状态，即 `rand_r` 会修改
+参数指向的值，我们需要保证传递的参数的生命周期在函数调用结束后依然有效，在这里我们使用 `CArray`。
+[source,perl6,linenums]
+------------------
+use NativeCall;
+sub rand_r(CArray[uint32]) of int32 is native(Str) { * }
+my @u := CArray[uint32].new;
+@u[0] = 55;
+for ^5 {
+    say "CURRENT => ", @u[0], " CALL-RET[", rand_r(@u), "] AFTER => ", @u[0];
+}
+------------------
+例子中 `rand_r` 的参数类型为 `CArray[uint32]`，`CArray` 是一个支持类型参数的 `role`。
+
+定义变量 `@u` 并调用 `rand_r` 之后输出大约是这样：
+[source]
+---------------
+CURRENT => 55 CALL-RET[431173127] AFTER => 1107800770
+CURRENT => 1107800770 CALL-RET[480593526] AFTER => 1182139145
+CURRENT => 1182139145 CALL-RET[1915167251] AFTER => 504621372
+CURRENT => 504621372 CALL-RET[2132881580] AFTER => 1823219531
+CURRENT => 1823219531 CALL-RET[1564670800] AFTER => -1420796954
+---------------
+
+=== 使用 Pointer
+
+=== 指针作为对象
+
+=== 函数指针
+
+== 数组
+
+== 结构
+
+== 函数作为参数
+
+== 全局变量
+
+== 库路径以及名字
+
+=== 标准库
