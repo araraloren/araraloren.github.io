@@ -11,19 +11,23 @@
 
 == 调用 C 的 rand 函数
 
-`C` 中的 `rand` 函数：
+.目标
+使用 `rand` 函数获取随机数。
 
+.接口
 `int rand(void);`
 
+.描述
 它没有参数，返回一个随机的整数。
 
-Perl6 的代码是这样子：
+.代码
 [source,perl6,linenums]
 --------------------
 use NativeCall;
 sub crand() of int32 is symbol("rand") is native(Str) { * }
 say crand();
 --------------------
+
 第1行告诉 `Perl6` 我们需要引用模块 `NativeCall`。
 
 然后接下来是一个 `sub`（我们使用 `trait` `is native` 来表明这是一个原生接口） 的声明，
@@ -42,9 +46,18 @@ say crand();
 
 == 字符串的传递
 
-字符串作为参数可以使用类型 `Str` 或者 `CArray[uint8]` 来完成。
+=== 使用 Str
 
-比如对于 `C` 中的函数 `puts`（`int puts(const char* s)`） 函数：
+.目标
+使用 `puts` 输出 `Perl6` 的 `Str` 类型的对象。
+
+.接口
+`int puts(const char* s)`
+
+.描述
+`puts` 将接受的字符串输出到标准输出，返回成功输出的字符个数。
+
+.代码
 [source,perl6,linenums]
 -----------------------
 use NativeCall;
@@ -52,7 +65,6 @@ sub puts(Str) of int32 is native('libc.so.6') { * }
 my Str $want-display="Hello, I'm from Perl6";
 say puts($want-display);
 -----------------------
-这里，我们声明了 `sub` `puts` 的样子。
 
 我们使用 `Str` 来表示 `puts` 接受一个字符串参数，
 尾部的 `trait` `is native('libc.so.6')` 表明我们的函数存在于 `C` 库中，这与第一个例子写法有点不同，
@@ -66,6 +78,57 @@ Hello, I'm from Perl6
 22
 -----------------------
 **22** 是 `puts` 的返回值，它返回成功输出的字符个数。
+
+NOTE: 此外，`Str` 还支持 `is encoded` 指定字符串的编码。
+
+=== 使用 CArray
+
+.目标
+将字符数组复制到另一个字符数组
+
+.接口
+`char* strncpy(char* dest, const char* str, size_t n);`
+
+.描述
+将 `str` 的前 `n` 个字符追加到 `dest` 字符串后面，返回指向 `dest` 的指针。
+如果 `src` 的长度小于 `n`，则额外的 `'\0'` 会被追加直到 `n` 个字符。
+
+.代码1
+[source,perl6,linenums]
+------------------------
+use NativeCall;
+sub strncpy(CArray[uint8], Str, size_t) of Str is native(Str) { * }
+my @str := CArray[uint8].new(0 xx 64);
+strncpy(@str, "we are friend!", 32);
+my $buf = Buf.new(@str[^32]);
+say $buf.decode("utf8");
+------------------------
+
+我们使用 `CArray[uin8]` 来表示第一个参数 `char*`，这样在函数调用返回时，`@str` 依然可以访问。
+根据 **jnthn(@IRC)** 大神所说，如果使用 `Str`，参数传递的时候将会是：
+
+产生临时的缓冲区，之后把编码好的数据放入，然后传递给要调用的函数，这样就无法将改变的数据带回了。
+
+由于第二个参数是只读的，我们使用 `Str` 来表示，剩下的就不再赘述了。
+
+之后我们新建一个类型为 `CArray[uint8]` 的数组，长度为 `64`，注意我们这里使用了 binding 操作符
+将数组绑定到 `@str` 上。
+
+接下来时调用函数，`strncpy` 就会将字符串复制到我们传递的缓冲区中，我们使用 `Buf` 将复制到 `@str`
+的数据取出，调用 `decode` 方法解码并显示到终端。
+
+.代码2
+[source,perl6,linenums]
+------------------------
+use NativeCall;
+sub strncpy(Buf, Str, size_t) of Str is native(Str) { * }
+my $str = Buf.new(0 xx 64);
+strncpy($str, "we are friend!", 32);
+say $str.decode("utf8");
+------------------------
+
+在向大神请教的过程中得知，其实我们可以不用 `CArray[uin8]`，`Buf` 或者 `Blob` 是更简单的方式，
+上面的代码比之前简单许多，输出结果一样。 
 
 == 指针的使用
 
@@ -130,6 +193,18 @@ CURRENT => 1823219531 CALL-RET[1564670800] AFTER => -1420796954
 ---------------
 
 === 使用 Pointer
+
+`C` 中堆内存管理一般使用 `malloc`/`free` 函数组合来完成。
+
+`void *malloc(size_t size);`
+
+`malloc` 用来分配内存，它接受一个 `size_t` 类型的大小，返回 `void*` 类型的指针。
+
+`void free(void *ptr);`
+
+`free` 用来释放内存，接受一个 `void*` 的指针，没有返回值。
+
+
 
 === 指针作为对象
 
