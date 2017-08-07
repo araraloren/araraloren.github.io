@@ -4,6 +4,7 @@
 :page-navtitle: 1的补码与2的补码
 :page-excerpt: 1的补码与2的补码，即原码和补码
 :page-root: ../../../
+:toc: macro
 
 假设对于一个整数 `x`，有 `n` 位，用 `v` 表示这个位向量。
 

@@ -5,6 +5,7 @@
 :page-excerpt: 使用内建支持的 NativeCall，Perl 6 可以轻松的调用 C 接口
 :page-root: ../../../
 :coderay-linenums-mode: table
+:toc: macro
 
 `NativeCall` 是 `Perl6` 内置的一个模块，它可以让你不用编写 `C` 代码就可以轻松完成
 调用现有 `C` 库接口的任务。
@@ -128,7 +129,7 @@ say $str.decode("utf8");
 ------------------------
 
 在向大神请教的过程中得知，其实我们可以不用 `CArray[uin8]`，`Buf` 或者 `Blob` 是更简单的方式，
-上面的代码比之前简单许多，输出结果一样。 
+上面的代码比之前简单许多，输出结果一样。
 
 == 指针的使用
 

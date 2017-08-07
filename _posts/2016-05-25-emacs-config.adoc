@@ -3,6 +3,7 @@
 :showtitle:
 :page-navtitle: emacs config
 :page-root: ../../../
+:toc: macro
 
 我的Emacs的配置，主要使用 `C/C{plus}+/Perl6` 三种 `mode`，对于 `c/c++` 可以自动补全
 

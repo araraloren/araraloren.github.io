@@ -4,6 +4,7 @@
 :page-navtitle: 归纳操作符（reduce operator）
 :page-excerpt: 归纳元操作符`[]`，将给定的 前缀操作符作用在 一个要归纳的 list上，它和 `reduce`例程的运算结果一致
 :page-root: ../../../
+:toc: macro
 
 归纳元操作符 `[]`，将给定的 前缀操作符作用在 一个要归纳的 `list` 上，
 它和 `reduce` 例程的运算结果一致。

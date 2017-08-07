@@ -4,6 +4,7 @@
 :page-navtitle: c++模板的技巧示例
 :page-excerpt: C++模板技巧
 :page-root: ../../../
+:toc: macro
 
 `c{plus}+` 的模板是 `c{plus}+` 泛型编程的基础，使用模板我们可以写出很多通用的类，
 再加上 `c{plus}+` 的其它设施比如强制类型转换操作符、析构函数等使模板变的更加强大，

@@ -4,6 +4,7 @@
 :page-navtitle: IA-32算术移位与逻辑移位
 :page-excerpt: 在计算机中，算术移位和逻辑移位有着不同的处理指令
 :page-root: ../../../
+:toc: macro
 
 在计算机中，算术移位和逻辑移位有着不同的处理指令。
 

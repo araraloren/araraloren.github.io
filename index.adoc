@@ -2,5 +2,6 @@
 :showtitle:
 :page-title: Loren Blog
 :page-description: C/C++/Perl6 Blog
+:page-header: { image: favicon.jpg }
 
 欢迎来到我的博客。
