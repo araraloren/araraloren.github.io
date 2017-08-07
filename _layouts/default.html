@@ -33,17 +33,21 @@
 </nav>
 <!-- End Nav -->
 
+{% if page.document %}
+{% capture toc %}
+{{ page.document | tocify_asciidoc }}
+{% endcapture %}
+{% if toc != '' %}
+<div class="left" style="padding-top: 100px">
+    <a href="{{ site.github.repo }}"> {{ site.github.repo }}</a>
+    {{ toc }}
+</div>
+{% endif %}
+{% endif %}
 
 <!-- Main Page Content and Sidebar -->
 
 <div class="row">
-
-    <div id="toc" class="toc2">
-        <ul>
-        {{ page.document | tocify_asciidoc }}
-        </ul>
-    </div>
-
     <!-- Main Blog Content -->
     <div class="large-9 columns" role="content">
         <ul>
