@@ -45,6 +45,7 @@
 <ul class="sectlevel2">
 <li><a href="#使用_str">使用 Str</a></li>
 <li><a href="#使用_carray">使用 CArray</a></li>
+<li><a href="#使用_buf">使用 Buf</a></li>
 </ul>
 </li>
 <li><a href="#指针的使用">指针的使用</a>
@@ -178,10 +179,10 @@ say puts($want-display);</pre></td>
 <p>接下来，我们定义了一个字符串 <code>$want-display</code>，它一共 <strong>22</strong> 个字符。
 调用 <code>puts</code> 输出 <code>$want-display</code>，屏幕将会显示</p>
 </div>
-<div class="listingblock">
+<div class="literalblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>Hello, I'm from Perl6
-22</code></pre>
+<pre>Hello, I'm from Perl6
+22</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -216,7 +217,7 @@ say puts($want-display);</pre></td>
 如果 <code>src</code> 的长度小于 <code>n</code>，则额外的 <code>'\0'</code> 会被追加直到 <code>n</code> 个字符。</p>
 </div>
 <div class="listingblock">
-<div class="title">代码1</div>
+<div class="title">代码</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
   <td class="line-numbers"><pre>1
@@ -253,8 +254,14 @@ say $buf.decode(&quot;utf8&quot;);</pre></td>
 <p>接下来时调用函数，<code>strncpy</code> 就会将字符串复制到我们传递的缓冲区中，我们使用 <code>Buf</code> 将复制到 <code>@str</code>
 的数据取出，调用 <code>decode</code> 方法解码并显示到终端。</p>
 </div>
+</div>
+<div class="sect2">
+<h3 id="使用_buf">使用 Buf</h3>
+<div class="paragraph">
+<p>在向大神请教的过程中得知，其实上一小节的例子我们可以不用 <code>CArray[uin8]</code>，可以用 <code>Buf</code> 作为缓冲区。</p>
+</div>
 <div class="listingblock">
-<div class="title">代码2</div>
+<div class="title">代码</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
   <td class="line-numbers"><pre>1
@@ -272,8 +279,7 @@ say $str.decode(&quot;utf8&quot;);</pre></td>
 </div>
 </div>
 <div class="paragraph">
-<p>在向大神请教的过程中得知，其实我们可以不用 <code>CArray[uin8]</code>，<code>Buf</code> 或者 <code>Blob</code> 是更简单的方式，
-上面的代码比之前简单许多，输出结果一样。</p>
+<p>可以看到使用 <code>Buf</code> 或者 <code>Blob</code> 比较简单，示例的输出结果不变。</p>
 </div>
 </div>
 </div>
@@ -286,16 +292,27 @@ say $str.decode(&quot;utf8&quot;);</pre></td>
 <div class="sect3">
 <h4 id="使用_code_trait_code_code_is_rw_code">使用 <code>trait</code> <code>is rw</code></h4>
 <div class="paragraph">
-<p><code>C</code> 中的 <code>time</code> 函数：</p>
+<div class="title">目标</div>
+<p>使用 <code>time</code> 函数获取当前的 <code>POSIX</code> 时间。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+一般来说 <code>time_t</code> 就是 <code>long</code>，所以在这里我们使用 <code>long</code> 来演示。
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
+<div class="title">接口</div>
 <p><code>time_t time(time_t *tloc);</code></p>
 </div>
-<div class="paragraph">
-<p>一般来说 <code>time_t</code> 就是 <code>long</code>，所以在这里我们使用 <code>long</code> 来演示。
-<code>time</code> 接受一个 <code>time_t</code> 的指针作为参数，返回当前的日历时间的秒数。</p>
-</div>
 <div class="listingblock">
+<div class="title">代码</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
   <td class="line-numbers"><pre>1
@@ -316,32 +333,34 @@ say $l;</pre></td>
 </div>
 <div class="paragraph">
 <p><code>time</code> 的参数我们使用 <code>long is rw</code> 来表示 <code>C</code> 接口的参数是 <code>long</code> 的指针，并且
-我们使用类型对象 <code>$null</code> 来表示 <code>NULL</code>，也可以使用 <code>new</code> 创建 <code>long</code> 类型实例，传递给 <code>time</code> 函数。</p>
+我们使用类型对象 <code>$null</code> 来表示 <code>NULL</code>，也可以使用 <code>new</code> 创建 <code>long</code> 类型实例，
+传递给 <code>time</code> 函数。</p>
 </div>
 <div class="paragraph">
 <p>因为这里执行的时间很短，输出大致像这样：</p>
 </div>
-<div class="listingblock">
+<div class="literalblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>1501953598
+<pre>1501953598
 1501953598
-1501953598</code></pre>
+1501953598</pre>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="使用_carray_2">使用 CArray</h4>
 <div class="paragraph">
-<p><code>C</code> 中的 <code>rand_r</code> 函数：</p>
+<div class="title">目标</div>
+<p>使用 <code>rand_r</code> 函数获取一个随机值，它接受一个 <code>int*</code> 的参数，并且它会在 <code>seedp</code> 指向的
+内存里存储随机的状态，即 <code>rand_r</code> 会修改参数指向的值，我们需要保证传递的参数的生命周期在函数
+调用结束后依然有效，在这里我们使用 <code>CArray</code>。</p>
 </div>
 <div class="paragraph">
+<div class="title">接口</div>
 <p><code>int rand_r(unsigned int *seedp);</code></p>
 </div>
-<div class="paragraph">
-<p>它接受一个 <code>int*</code> 的参数，并且它会在 <code>seedp</code> 指向的内存里存储随机的状态，即 <code>rand_r</code> 会修改
-参数指向的值，我们需要保证传递的参数的生命周期在函数调用结束后依然有效，在这里我们使用 <code>CArray</code>。</p>
-</div>
 <div class="listingblock">
+<div class="title">代码</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
   <td class="line-numbers"><pre>1
@@ -363,38 +382,105 @@ for ^5 {
 </div>
 </div>
 <div class="paragraph">
-<p>例子中 <code>rand_r</code> 的参数类型为 <code>CArray[uint32]</code>，<code>CArray</code> 是一个支持类型参数的 <code>role</code>。</p>
+<p>这里使用的参数类型为 <code>CArray[uint32]</code>，<code>CArray</code> 是一个支持类型参数的 <code>role</code>。</p>
 </div>
 <div class="paragraph">
 <p>定义变量 <code>@u</code> 并调用 <code>rand_r</code> 之后输出大约是这样：</p>
 </div>
-<div class="listingblock">
+<div class="literalblock">
 <div class="content">
-<pre class="CodeRay highlight"><code>CURRENT =&gt; 55 CALL-RET[431173127] AFTER =&gt; 1107800770
+<pre>CURRENT =&gt; 55 CALL-RET[431173127] AFTER =&gt; 1107800770
 CURRENT =&gt; 1107800770 CALL-RET[480593526] AFTER =&gt; 1182139145
 CURRENT =&gt; 1182139145 CALL-RET[1915167251] AFTER =&gt; 504621372
 CURRENT =&gt; 504621372 CALL-RET[2132881580] AFTER =&gt; 1823219531
-CURRENT =&gt; 1823219531 CALL-RET[1564670800] AFTER =&gt; -1420796954</code></pre>
+CURRENT =&gt; 1823219531 CALL-RET[1564670800] AFTER =&gt; -1420796954</pre>
 </div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="使用_buf_t">使用 Buf[::T]</h4>
+<div class="paragraph">
+<p>正如 <code>Buf</code> 可以替代 <code>CArray[uint8]</code> 一样，<code>Buf[uint32]</code> 可以替代 <code>CArray[uint32]</code> 作为缓冲区。</p>
+</div>
+<div class="listingblock">
+<div class="title">代码2</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre>1
+2
+3
+4
+5
+6
+</pre></td>
+  <td class="code"><pre>use NativeCall;
+sub rand_r(Buf[uint32]) of int32 is native(Str) { * }
+my $buf = Buf[uint32].new(&lt;55&gt;);
+for ^5 {
+    say &quot;CURRENT =&gt; &quot;, $buf[0], &quot; CALL-RET[&quot;, rand_r($buf), &quot;] AFTER =&gt; &quot;, $buf[0];
+}</pre></td>
+</tr></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>输出结果和上一小节相同。</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="使用_pointer">使用 Pointer</h3>
 <div class="paragraph">
-<p><code>C</code> 中堆内存管理一般使用 <code>malloc</code>/<code>free</code> 函数组合来完成。</p>
+<div class="title">目标</div>
+<p>使用 C 语言的内存管理函数来完成内存的申请与释放。</p>
 </div>
 <div class="paragraph">
+<div class="title">接口</div>
 <p><code>void *malloc(size_t size);</code></p>
-</div>
-<div class="paragraph">
-<p><code>malloc</code> 用来分配内存，它接受一个 <code>size_t</code> 类型的大小，返回 <code>void*</code> 类型的指针。</p>
 </div>
 <div class="paragraph">
 <p><code>void free(void *ptr);</code></p>
 </div>
 <div class="paragraph">
-<p><code>free</code> 用来释放内存，接受一个 <code>void*</code> 的指针，没有返回值。</p>
+<p><code>int printf(const char*, &#8230;&#8203;);</code></p>
+</div>
+<div class="listingblock">
+<div class="title">代码</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="perl6"><table class="CodeRay"><tr>
+  <td class="line-numbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td>
+  <td class="code"><pre>use NativeCall;
+sub malloc(size_t) of Pointer is native(Str) { * }
+sub free(Pointer) is native(Str) { * }
+sub printf(Str, int32, int32, CArray[int32], Pointer) of int32 is native(Str) { * }
+my Pointer $ptr = malloc(4);
+my CArray[int32] $buf = nativecast(CArray[int32], $ptr);
+my Pointer[int32] $pint = nativecast(Pointer[int32], $ptr);
+$buf[0] = int32.new(64);
+my Str $format = 'value = %d &lt;-&gt; %d @ %p &lt;-&gt; %p' ~ &quot;\n&quot;;
+printf($format, $buf[0], $pint.deref, $buf, $ptr);
+free($ptr);</pre></td>
+</tr></table></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>这里 <code>free</code> 的参数以及 <code>printf</code> 的第五个参数使用了 <code>Pointer</code> 表示 <code>void*</code> 类型的指针。
+<code>printf</code> 是一个可变参数的函数（目前没看到 <code>NativeCall</code> 如何处理可变参数），
+这里显式的设定了它的参数。
+我们使用 <code>malloc</code> 分配了一块 <code>int32</code> 大小的内存，<code>malloc</code> 的返回值 - 内存地址 - 存储
+在 <code>$ptr</code> 里，之后使用 <code>nativecast</code> 将 <code>$ptr</code> 分别转换为 <code>CArray[int32]</code> 以及 <code>Pointer[int32]</code>
+类型，然后存储了一个 <code>int32</code> 的值 <strong>64</strong>，
+之后打印出 <code>$buf</code>、 <code>$ptr</code>、 <code>$pint</code> 内存存储的值以及内存的地址。</p>
 </div>
 </div>
 <div class="sect2">
