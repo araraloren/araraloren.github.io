@@ -73,11 +73,10 @@ say puts($want-display);
 
 接下来，我们定义了一个字符串 `$want-display`，它一共 **22** 个字符。
 调用 `puts` 输出 `$want-display`，屏幕将会显示
-[source]
------------------------
-Hello, I'm from Perl6
-22
------------------------
+
+    Hello, I'm from Perl6
+    22
+
 **22** 是 `puts` 的返回值，它返回成功输出的字符个数。
 
 NOTE: 此外，`Str` 还支持 `is encoded` 指定字符串的编码。
@@ -94,7 +93,7 @@ NOTE: 此外，`Str` 还支持 `is encoded` 指定字符串的编码。
 将 `str` 的前 `n` 个字符追加到 `dest` 字符串后面，返回指向 `dest` 的指针。
 如果 `src` 的长度小于 `n`，则额外的 `'\0'` 会被追加直到 `n` 个字符。
 
-.代码1
+.代码
 [source,perl6,linenums]
 ------------------------
 use NativeCall;
@@ -118,7 +117,11 @@ say $buf.decode("utf8");
 接下来时调用函数，`strncpy` 就会将字符串复制到我们传递的缓冲区中，我们使用 `Buf` 将复制到 `@str`
 的数据取出，调用 `decode` 方法解码并显示到终端。
 
-.代码2
+=== 使用 Buf
+
+在向大神请教的过程中得知，其实上一小节的例子我们可以不用 `CArray[uin8]`，可以用 `Buf` 作为缓冲区。
+
+.代码
 [source,perl6,linenums]
 ------------------------
 use NativeCall;
@@ -128,8 +131,7 @@ strncpy($str, "we are friend!", 32);
 say $str.decode("utf8");
 ------------------------
 
-在向大神请教的过程中得知，其实我们可以不用 `CArray[uin8]`，`Buf` 或者 `Blob` 是更简单的方式，
-上面的代码比之前简单许多，输出结果一样。
+可以看到使用 `Buf` 或者 `Blob` 比较简单，示例的输出结果不变。
 
 == 指针的使用
 
@@ -137,12 +139,15 @@ say $str.decode("utf8");
 
 ==== 使用 `trait` `is rw`
 
-`C` 中的 `time` 函数：
+.目标
+使用 `time` 函数获取当前的 `POSIX` 时间。
 
+NOTE: 一般来说 `time_t` 就是 `long`，所以在这里我们使用 `long` 来演示。
+
+.接口
 `time_t time(time_t *tloc);`
 
-一般来说 `time_t` 就是 `long`，所以在这里我们使用 `long` 来演示。
-`time` 接受一个 `time_t` 的指针作为参数，返回当前的日历时间的秒数。
+.代码
 [source,perl6,linenums]
 ------------------
 use NativeCall;
@@ -153,24 +158,26 @@ say time($l);
 say $l;
 ------------------
 `time` 的参数我们使用 `long is rw` 来表示 `C` 接口的参数是 `long` 的指针，并且
-我们使用类型对象 `$null` 来表示 `NULL`，也可以使用 `new` 创建 `long` 类型实例，传递给 `time` 函数。
+我们使用类型对象 `$null` 来表示 `NULL`，也可以使用 `new` 创建 `long` 类型实例，
+传递给 `time` 函数。
 
 因为这里执行的时间很短，输出大致像这样：
-[source]
---------
-1501953598
-1501953598
-1501953598
---------
+
+    1501953598
+    1501953598
+    1501953598
 
 ==== 使用 CArray
 
-`C` 中的 `rand_r` 函数：
+.目标
+使用 `rand_r` 函数获取一个随机值，它接受一个 `int*` 的参数，并且它会在 `seedp` 指向的
+内存里存储随机的状态，即 `rand_r` 会修改参数指向的值，我们需要保证传递的参数的生命周期在函数
+调用结束后依然有效，在这里我们使用 `CArray`。
 
+.接口
 `int rand_r(unsigned int *seedp);`
 
-它接受一个 `int*` 的参数，并且它会在 `seedp` 指向的内存里存储随机的状态，即 `rand_r` 会修改
-参数指向的值，我们需要保证传递的参数的生命周期在函数调用结束后依然有效，在这里我们使用 `CArray`。
+.代码
 [source,perl6,linenums]
 ------------------
 use NativeCall;
@@ -181,30 +188,71 @@ for ^5 {
     say "CURRENT => ", @u[0], " CALL-RET[", rand_r(@u), "] AFTER => ", @u[0];
 }
 ------------------
-例子中 `rand_r` 的参数类型为 `CArray[uint32]`，`CArray` 是一个支持类型参数的 `role`。
+这里使用的参数类型为 `CArray[uint32]`，`CArray` 是一个支持类型参数的 `role`。
 
 定义变量 `@u` 并调用 `rand_r` 之后输出大约是这样：
-[source]
----------------
-CURRENT => 55 CALL-RET[431173127] AFTER => 1107800770
-CURRENT => 1107800770 CALL-RET[480593526] AFTER => 1182139145
-CURRENT => 1182139145 CALL-RET[1915167251] AFTER => 504621372
-CURRENT => 504621372 CALL-RET[2132881580] AFTER => 1823219531
-CURRENT => 1823219531 CALL-RET[1564670800] AFTER => -1420796954
----------------
+
+    CURRENT => 55 CALL-RET[431173127] AFTER => 1107800770
+    CURRENT => 1107800770 CALL-RET[480593526] AFTER => 1182139145
+    CURRENT => 1182139145 CALL-RET[1915167251] AFTER => 504621372
+    CURRENT => 504621372 CALL-RET[2132881580] AFTER => 1823219531
+    CURRENT => 1823219531 CALL-RET[1564670800] AFTER => -1420796954
+
+==== 使用 Buf[::T]
+
+正如 `Buf` 可以替代 `CArray[uint8]` 一样，`Buf[uint32]` 可以替代 `CArray[uint32]` 作为缓冲区。
+
+.代码2
+[source,perl6,linenums]
+------------------
+use NativeCall;
+sub rand_r(Buf[uint32]) of int32 is native(Str) { * }
+my $buf = Buf[uint32].new(<55>);
+for ^5 {
+    say "CURRENT => ", $buf[0], " CALL-RET[", rand_r($buf), "] AFTER => ", $buf[0];
+}
+------------------
+
+输出结果和上一小节相同。
+
 
 === 使用 Pointer
 
-`C` 中堆内存管理一般使用 `malloc`/`free` 函数组合来完成。
+.目标
+
+使用 C 语言的内存管理函数来完成内存的申请与释放。
+
+.接口
 
 `void *malloc(size_t size);`
 
-`malloc` 用来分配内存，它接受一个 `size_t` 类型的大小，返回 `void*` 类型的指针。
-
 `void free(void *ptr);`
 
-`free` 用来释放内存，接受一个 `void*` 的指针，没有返回值。
+`int printf(const char*, ...);`
 
+.代码
+[source,perl6,linenums]
+------------------
+use NativeCall;
+sub malloc(size_t) of Pointer is native(Str) { * }
+sub free(Pointer) is native(Str) { * }
+sub printf(Str, int32, int32, CArray[int32], Pointer) of int32 is native(Str) { * }
+my Pointer $ptr = malloc(4);
+my CArray[int32] $buf = nativecast(CArray[int32], $ptr);
+my Pointer[int32] $pint = nativecast(Pointer[int32], $ptr);
+$buf[0] = int32.new(64);
+my Str $format = 'value = %d <-> %d @ %p <-> %p' ~ "\n";
+printf($format, $buf[0], $pint.deref, $buf, $ptr);
+free($ptr);
+------------------
+
+这里 `free` 的参数以及 `printf` 的第五个参数使用了 `Pointer` 表示 `void*` 类型的指针。
+`printf` 是一个可变参数的函数（目前没看到 `NativeCall` 如何处理可变参数），
+这里显式的设定了它的参数。
+我们使用 `malloc` 分配了一块 `int32` 大小的内存，`malloc` 的返回值 - 内存地址 - 存储
+在 `$ptr` 里，之后使用 `nativecast` 将 `$ptr` 分别转换为 `CArray[int32]` 以及 `Pointer[int32]`
+类型，然后存储了一个 `int32` 的值 **64**，
+之后打印出 `$buf`、 `$ptr`、 `$pint` 内存存储的值以及内存的地址。
 
 
 === 指针作为对象
