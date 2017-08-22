@@ -50,7 +50,13 @@
 </li>
 <li><a href="#指针的使用">指针的使用</a>
 <ul class="sectlevel2">
-<li><a href="#指针作为参数">指针作为参数</a></li>
+<li><a href="#指针作为参数">指针作为参数</a>
+<ul class="sectlevel3">
+<li><a href="#使用_code_trait_code_code_is_rw_code">使用 <code>trait</code> <code>is rw</code></a></li>
+<li><a href="#使用_carray_2">使用 CArray</a></li>
+<li><a href="#使用_buf_t">使用 Buf[::T]</a></li>
+</ul>
+</li>
 <li><a href="#使用_pointer">使用 Pointer</a></li>
 <li><a href="#指针作为对象">指针作为对象</a></li>
 <li><a href="#函数指针">函数指针</a></li>
@@ -140,6 +146,23 @@ say crand();</pre></td>
 <div class="sect1">
 <h2 id="字符串的传递">字符串的传递</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>字符串的传递可以使用 <code>Str</code>、<code>CArray[uint8]</code> 以及 <code>Buf</code> 来实现，
+<code>Str</code> 用来表示 <code>const char*</code> 参数，函数内部不会对字符串的内容作出更改；
+其他情况可以使用 <code>CArray[uint8]</code> 或者 <code>Buf</code>。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>Buf</code> 并不是 <strong>native</strong> 类型，目前在 <code>nativecast</code> 中不被支持
+</td>
+</tr>
+</table>
+</div>
 <div class="sect2">
 <h3 id="使用_str">使用 Str</h3>
 <div class="paragraph">
@@ -287,6 +310,9 @@ say $str.decode(&quot;utf8&quot;);</pre></td>
 <div class="sect1">
 <h2 id="指针的使用">指针的使用</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>当需要传递指针时，<code>Perl6</code> 提供了 <code>Pointer</code> 以及 <code>trait</code> <code>is rw</code>。</p>
+</div>
 <div class="sect2">
 <h3 id="指针作为参数">指针作为参数</h3>
 <div class="sect3">
@@ -535,6 +561,10 @@ free($ptr);</pre></td>
 
         <h4>Posts</h4>
         <ul id="posts" class="posts nav">
+            
+            <li>
+                <a href="/2017/08/22/Perl6%E7%9A%84%E7%AC%A6%E5%8F%B7%E8%A1%A8.html">Perl6的符号表</a>
+            </li>
             
             <li>
                 <a href="/2017/08/05/Perl6%E8%B0%83%E7%94%A8C%E6%8E%A5%E5%8F%A3.html">Perl6调用C接口</a>
