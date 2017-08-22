@@ -47,6 +47,12 @@ say crand();
 
 == 字符串的传递
 
+字符串的传递可以使用 `Str`、`CArray[uint8]` 以及 `Buf` 来实现，
+`Str` 用来表示 `const char*` 参数，函数内部不会对字符串的内容作出更改；
+其他情况可以使用 `CArray[uint8]` 或者 `Buf`。
+
+NOTE: `Buf` 并不是 **native** 类型，目前在 `nativecast` 中不被支持
+
 === 使用 Str
 
 .目标
@@ -134,6 +140,8 @@ say $str.decode("utf8");
 可以看到使用 `Buf` 或者 `Blob` 比较简单，示例的输出结果不变。
 
 == 指针的使用
+
+当需要传递指针时，`Perl6` 提供了 `Pointer` 以及 `trait` `is rw`。
 
 === 指针作为参数
 

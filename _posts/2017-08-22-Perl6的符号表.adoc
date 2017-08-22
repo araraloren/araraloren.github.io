@@ -1,0 +1,79 @@
+= Perl6的符号表
+:toc-title: contents
+:showtitle:
+:page-navtitle: Perl6的符号表
+:page-root: ../../../
+:coderay-linenums-mode: table
+:toc: macro
+
+== Perl6 的符号表
+
+`Perl6` 的代码整个是由多个 `PACKAGE` 组成的，
+一个 `PACKAGE` 会包含两个符号表： 词法表（`lexical pad`）和 公共符号表（`public symbol table`）。
+
+=== 词法表
+
+**词法表** 存放的是使用 `my` 声明的符号，具有 **词法作用域**（即块作用域），
+词法表中的符号只在当前作用域可以访问，外部无法访问。
+通过 `my` 声明的的变量，不可以通过 `is export` 导出。
+`sub`、`enum` 和 变量不一样，使用 `my` 声明的 `sub` 依然可以通过 `is export` 导出（这里猜想一下，
+因为 **函数/类型** 声明和变量不一样，变量用完了可能就立即销毁了，类型则不会或者没必要）。
+
+[source,perl6]
+--------------------
+module F {
+    my $x = 20; # 词法作用域变量，$x在F外部无法访问
+    #my $y is export; # 无法导出 $y
+    {
+        my $z = 42; # $z 无法在 { } 外部访问
+        say ::.keys; # ($_ $z $*DISPATCHER)
+    }
+    sub f1() { 42 } # 词法作用域 sub，无法在F外部访问到 &f1
+    sub f2() is export { 42 }; # 可以通过 is export 导出 &f2
+    my enum E is export (a => 1); # 词法作用域 enum，也可以使用 is export 导出 E 以及 a
+    say ::.keys; # ($_ a &f2 ::?MODULE $?MODULE E ::?PACKAGE &f1 $?PACKAGE $x)
+}
+say F::.keys; # (EXPORT)
+import F;
+say ::.keys; # ($=pod $_ $/ &f2 a F !UNIT_MARKER $=finish EXPORT $! E ::?PACKAGE GLOBALish $¢ $?PACKAGE)
+say &f2(); # 42
+say a; # a
+say E::a; # a
+--------------------
+
+从上面的例子中可以看到，所有通过 `my` 声明的变量都不会出现在 **公共符号表**（即 `F::.keys`）中，
+而当执行了 `import F` 之后，标记为 `is export` 的符号都导入到了当前的 **词法表** 中，然后我们就可以
+使用 `&f2` 来访问我们想访问的 **变量/函数** 了。
+
+NOTE: sub 默认是词法作用域。
+
+=== 公共符号表
+
+**公共符号表** 存放的是通过 `our` 声明的符号的 **别名**（此时 **词法符号表** 依然有这些符号），
+具有 **全局作用域**，可以通过__包名称查找__访问到。
+
+[source,perl6]
+-------------------
+module F {
+    our $x is export = 32; # $x 是全局作用域，可以通过 is export 导出
+    our sub f1() { 42 }
+    our sub f2() is export { 42 } # 可以导出 &f2
+    enum E (a => 2); # 全局作用域，可以使用 is export 导出
+    say ::.keys; # ($_ a &f2 ::?MODULE $?MODULE E ::?PACKAGE &f1 $?PACKAGE $x)
+}
+say F::.keys; # (a &f2 EXPORT E &f1 $x)
+import F;
+say ::.keys; # ($=pod $_ $/ &f2 F !UNIT_MARKER $=finish EXPORT $! ::?PACKAGE GLOBALish $¢ $x $?PACKAGE)
+say $x; # 32
+say $F::x; # 32
+say &F::f1(); # 42
+# say &f1; invalid
+say &F::f2(); # 42
+say &f2(); # 42
+say F::E::a; # a
+-------------------
+
+从上面的例子可以看出，通过 `our` 声明的变量都向公共符号表导出一个别名，我们可以直接使用__包名称查找__
+来访问这些符号。
+
+NOTE: enum 默认是全局作用域。

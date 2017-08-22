@@ -35,7 +35,7 @@
 
 {% if page.document %}
 {% capture toc %}
-{{ page.document | tocify_asciidoc }}
+{{ page.document | tocify_asciidoc: 5 }}
 {% endcapture %}
 {% if toc != '' %}
 <div class="left" style="padding-top: 100px">
